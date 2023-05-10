@@ -1,62 +1,189 @@
-/* This program blinks the led embedded in the blue pill board. The led is
- * attached to pin PC13. This pin works as a GPIO, then it must be configured,
- * at assembly level, through the following registers:
- * 1) RCC register,
- * 2) GPIOC_CRL register, 
- * 3) GPIOC_CRH register, and
- * 4) GPIOC_ODR register.
- * 
- * Author: A. Geovanni Medrano-Chávez.
- * The following code is based on the explanation given in this video:
- * https://www.youtube.com/watch?v=KLWzyhOR3-Y,
- */
+	.thumb              @ Assembles using thumb mode
+	.cpu cortex-m3      @ Generates Cortex-M3 instructions
+	.syntax unified
 
+	.include "ivt.s"
+	.include "gpio_map.inc"
+	.include "rcc_map.inc"
 
+	.section .text
+ 	.align  1
+ 	.syntax unified
+ 	.thumb
+ 	.global __main
+delay:
+        # Prologue
+        push    {r7} @ backs r7 up
+        sub     sp, sp, #28 @ reserves a 32-byte function frame
+        add     r7, sp, #0 @ updates r7
+        str     r0, [r7] @ backs ms up
+        # Body function
+        mov     r0, #255 @ ticks = 255, adjust to achieve 1 ms delay
+        str     r0, [r7, #16]
+# for (i = 0; i < ms; i++)
+        mov     r0, #0 @ i = 0;
+        str     r0, [r7, #8]
+        b       F3
+# for (j = 0; j < tick; j++)
+F4:     mov     r0, #0 @ j = 0;
+        str     r0, [r7, #12]
+        b       F5
+F6:     ldr     r0, [r7, #12] @ j++;
+        add     r0, #1
+        str     r0, [r7, #12]
+F5:     ldr     r0, [r7, #12] @ j < ticks;
+        ldr     r1, [r7, #16]
+        cmp     r0, r1
+        blt     F6
+        ldr     r0, [r7, #8] @ i++;
+        add     r0, #1
+        str     r0, [r7, #8]
+F3:     ldr     r0, [r7, #8] @ i < ms
+        ldr     r1, [r7]
+        cmp     r0, r1
+        blt     F4
+        # Epilogue
+        adds    r7, r7, #28
+        mov	    sp, r7
+        pop	    {r7}
+        bx	    lr
 
-.thumb              @ Assembles using thumb mode
-.cpu cortex-m3      @ Generates Cortex-M3 instructions
-.syntax unified
+inc_count:
+    	@ Increase counter
+		push 	{r7, lr}
+		sub 	sp, sp, #8
+		add		r7, sp, #0
+		str		r0, [r7, #4]
+		ldr		r0, [r7, #4]
+    	adds	r0, r0, #1
+		str		r0, [r7, #4]
+		ldr		r3, =0x3FF
+    	cmp 	r0, r3
+    	ble 	.L9   @ Jumps to "reset_count" if counter value is grather than 1023
+		bl		reset_count
+		str		r0, [r7, #4]
+.L9:
+		ldr		r0, [r7, #4]
+		adds	r7, r7, #8
+		mov		sp, r7
+		pop 	{r7}
+		pop		{lr}
+		bx		lr
 
-.include "ivt.s"
-.include "gpio_map.inc"
-.include "rcc_map.inc"
+dec_count:
+	   	@ Decrease counter
+		push 	{r7, lr}
+		sub 	sp, sp, #8
+		add		r7, sp, #0
+		str		r0, [r7, #4]
+		ldr		r0, [r7, #4]
+    	subs 	r0, r0, #1
+		str		r0, [r7, #4]
+    	cmp 	r0, #0
+		bge		.L10
+    	bl 		reset_count   @ Jumps to "reset_count" if counter value is less than 0
+		str		r0, [r7, #4]
+.L10:
+		ldr		r0, [r7, #4]
+		adds	r7, r7, #8
+		mov		sp, r7
+		pop 	{r7}
+		pop		{lr}
+		bx		lr
 
-.section .text
-.align	1
-.syntax unified
-.thumb
-.global __main
+reset_count:
+		@ Turn LEDs off
+		push 	{r7, lr}
+		sub 	sp, sp, #8
+		add		r7, sp, #0
+		ldr 	r3, =GPIOB_BASE
+		mov 	r1, 0x0
+		str 	r1, [r3, GPIOx_ODR_OFFSET]
+		str		r1, [r7, #4]
+		mov		r0, #500
+		bl   	delay
+		ldr		r3, [r7, #4]
+		mov 	r0, r3
+		adds	r7, r7, #8
+		mov		sp, r7
+		pop 	{r7}
+		pop		{lr}
+		bx		lr
+
 __main:
-# Setup
-        # enabling clock in port C
-        ldr     r0, =RCC_BASE
-        mov     r1, 0x10 @ loads 16 in r1 to enable clock in port C (IOPC bit)
-        str     r1, [r0, RCC_APB2ENR_OFFSET] @ M[RCC_APB2ENR] gets 16
+		push 	{r7, lr}
+		sub 	sp, sp, #8
+		add		r7, sp, #0
+		
+        @ enabling clock in port A, B and C
+        ldr     r2, =RCC_BASE
+        mov     r3, 0x1C
+        str     r3, [r2, RCC_APB2ENR_OFFSET]
 
-        # reset pin 0 to 7 in GPIOC_CRL
-        ldr     r0, =GPIOC_BASE @ moves base address of port C
-        ldr     r1, =0x44444444 @ this constant signals the reset state
-        str     r1, [r0, GPIOx_CRL_OFFSET] @ M[GPIOC_CRL] gets 0x44444444
+		@ set pins PB5 - PB7 as digital output
+        ldr     r2, =GPIOB_BASE
+        ldr     r3, =0x33344444
+        str     r3, [r2, GPIOx_CRL_OFFSET]
 
-        # set pin 13 as digital output
-        ldr     r1, =0x44344444 @ PC13: output push-pull, max speed 50 MHz
-        str     r1, [r0, GPIOx_CRH_OFFSET] @ M[GPIOC_CRH] gets 0x44344444
+		@ set pins PB8 - PB15 as digital output
+        ldr     r2, =GPIOB_BASE
+        ldr     r3, =0x33333333
+        str     r3, [r2, GPIOx_CRH_OFFSET]
+
+        @ set pins PA0 and PA4 as digital input
+        ldr     r2, =GPIOA_BASE
+        ldr     r3, =0x44484448
+        str     r3, [r2, GPIOx_CRL_OFFSET]
 
         # set led status initial value
-        add     r0, GPIOx_ODR_OFFSET @ moves address of GPIOC_ODR register to r0
-        mov     r1, 0x0
-loop:   
-        cmp     r1, 0x0 @ if r1 equals zero then turn PC13 on
-        bne     L1 @ else, turns PC13 off
-        mov     r3, 0x0 @ turns PC13 on
-        b       L2
-L1:     mov     r3, 0x2000 @ turns PC13 off
-L2:     str     r3, [r0] @ M[GPIOC_ODR] gets r1 value
-        # dirty delay
-        ldr     r2, =2666667 @ r2 gets 2666667
-        b       L3
-L4:     sub     r2, r2, #1
-L3:     cmp     r2, #0
-        bge     L4
-        eor     r1, #1 @ negates LSB of r1
-        b       loop
+		ldr     r3, =GPIOB_BASE
+		mov		r4, 0x0
+		str		r4, [r3, GPIOx_ODR_OFFSET]
+
+		mov		r3, 0x0
+		str		r3, [r7, #4]
+loop:
+		@ Check if both A0 and A4 are pressed at the same time
+		ldr		r0, =GPIOA_BASE
+		ldr 	r1, [r0, GPIOx_IDR_OFFSET]
+		and		r1, r1, 0x11
+		cmp		r1, 0x11
+		bne		.L6
+		bl      reset_count
+		str		r0, [r7, #4]
+		mov		r0, #700
+		bl   	delay
+
+.L6:
+    	@ Continue reading if any of them are pressed
+		@ Check if A0 is pressed
+    	ldr 	r0, =GPIOA_BASE
+    	ldr 	r1, [r0, GPIOx_IDR_OFFSET]
+    	and 	r1, r1, 0x01
+    	cmp 	r1, 0x1
+    	bne 	.L7
+		ldr		r0, [r7, #4]
+		bl 		inc_count
+		str		r0, [r7, #4]
+
+.L7:		
+    	@ Check if A4 is pressed
+    	ldr 	r0, =GPIOA_BASE
+    	ldr 	r1, [r0, GPIOx_IDR_OFFSET]
+    	and 	r1, r1, 0x10
+    	cmp 	r1, 0x10
+    	bne		.L8
+		ldr		r0, [r7, #4]
+		bl		dec_count
+		str		r0, [r7, #4]
+
+.L8:
+		@ Turn LEDs on
+    	ldr 	r3, =GPIOB_BASE
+		ldr		r0, [r7, #4]
+		mov 	r1, r0
+		lsl 	r1, r1, #5
+    	str 	r1, [r3, GPIOx_ODR_OFFSET]
+		mov		r0, #500    
+		bl   	delay
+		b 		loop
