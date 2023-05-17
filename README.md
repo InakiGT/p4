@@ -35,4 +35,4 @@ Donde 'prog.bin' es el nombre del binario generado
 ![img](https://i.ibb.co/K7K4p12/Diagrama-en-blanco.png)
 
 ## Marco de las funciones
-![img](https://i.ibb.co/yP2dnFb/Captura-de-pantalla-2023-05-17-a-la-s-14-23-09.png)
+![img](https://i.ibb.co/FzjSnT9/Captura-de-pantalla-2023-05-17-a-la-s-14-32-40.png)
