@@ -48,6 +48,102 @@ F3:     ldr     r0, [r7, #8] @ i < ms
         pop	    {r7}
         bx	    lr
 
+# This subrutine reads if buttons are pressed
+read_button_input:
+		push	{r7}
+		sub 	sp, sp, #4
+		add		r7, sp, #0
+		str 	r0, [r7, #4]
+
+		ldr		r0, =GPIOA_BASE
+		ldr 	r1, [r0, GPIOx_IDR_OFFSET]
+		ldr 	r0, [r7, #4]
+		and		r1, r1, r0
+		cmp		r1, r0
+		beq		.L1100
+		mov		r0, #0
+.L1100:
+		adds 	r7, r7, #4
+		mov		sp, r7
+		pop 	{r7}
+		bx		lr
+
+
+# This subrutine aprove if a combination of buttons are pressed
+is_button_pressed:
+		push 	{r7, lr}
+		sub		sp, sp, #16
+		add		r7, sp, #0
+		str 	r0, [r7, #4]
+
+		# read button input
+		ldr		r0, [r7, #4]
+		bl		is_button_pressed
+		ldr 	r3, [r7, #4]
+		cmp		r0, r3
+		beq		.L102
+		mov		r0, #0
+		adds	r7, r7, #8
+		mov		sp, r7
+		pop 	{r7}
+		pop 	{lr}
+		bx		lr
+
+.L102:
+		# counter = 0
+		mov		r3, #0
+		str		r3, [r7, #8]
+
+		# for (int i = 0, i < 10, i++) 
+		mov     r0, #0 @ j = 0;
+        str     r0, [r7, #12]
+        b       K3
+K2:     
+		# wait 5 ms
+		mov 	r0, #5
+		bl   	delay
+		# read button input
+		ldr		r0, [r7, #4]
+		bl		is_button_pressed
+		ldr 	r3, [r7, #4]
+		cmp		r0, r3
+		beq 	K0
+		mov 	r3, #0
+		str		r3, [r7, #8]
+K0:		
+		# counter = counter + 1
+		ldr 	r3, [r7, #8]
+		add		r3, #1
+		str 	r3, [r7, #8]
+
+		ldr 	r3, [r7, #8]
+		cmp		r3, #4
+		blt		K1
+		ldr		r0, [r7, #4]
+		adds	r7, r7, #16
+		mov		sp, r7
+		pop 	{r7}
+		pop 	{lr}
+		bx		lr
+
+K1:
+		ldr     r0, [r7, #12] @ j++;
+        add     r0, #1
+        str     r0, [r7, #12]
+K3:     
+		ldr     r0, [r7, #12] @ j < 10;
+        cmp     r0, #10
+        blt     K2
+
+		# return 0
+		mov 	r0, #0
+		adds	r7, r7, #16
+		mov		sp, r7
+		pop 	{r7}
+		pop 	{lr}
+		bx		lr
+
+
 inc_count:
     	@ Increase counter
 		push 	{r7, lr}
@@ -70,6 +166,7 @@ inc_count:
 		pop		{lr}
 		bx		lr
 
+
 dec_count:
 	   	@ Decrease counter
 		push 	{r7, lr}
@@ -91,6 +188,7 @@ dec_count:
 		pop		{lr}
 		bx		lr
 
+
 reset_count:
 		@ Turn LEDs off
 		push 	{r7, lr}
@@ -100,8 +198,6 @@ reset_count:
 		mov 	r1, 0x0
 		str 	r1, [r3, GPIOx_ODR_OFFSET]
 		str		r1, [r7, #4]
-		mov		r0, #500
-		bl   	delay
 		ldr		r3, [r7, #4]
 		mov 	r0, r3
 		adds	r7, r7, #8
@@ -144,23 +240,25 @@ __main:
 		str		r3, [r7, #4]
 loop:
 		@ Check if both A0 and A4 are pressed at the same time
-		ldr		r0, =GPIOA_BASE
-		ldr 	r1, [r0, GPIOx_IDR_OFFSET]
-		and		r1, r1, 0x11
-		cmp		r1, 0x11
+		@ ldr		r0, =GPIOA_BASE
+		@ ldr 	r1, [r0, GPIOx_IDR_OFFSET]
+		@ and		r1, r1, 0x11
+		mov 	r0, 0x11
+		bl 		is_button_pressed
+		cmp		r0, 0x11
 		bne		.L6
 		bl      reset_count
 		str		r0, [r7, #4]
-		mov		r0, #700
-		bl   	delay
 
 .L6:
     	@ Continue reading if any of them are pressed
-		@ Check if A0 is pressed
-    	ldr 	r0, =GPIOA_BASE
-    	ldr 	r1, [r0, GPIOx_IDR_OFFSET]
-    	and 	r1, r1, 0x01
-    	cmp 	r1, 0x1
+		@ @ Check if A0 is pressed
+    	@ ldr 	r0, =GPIOA_BASE
+    	@ ldr 	r1, [r0, GPIOx_IDR_OFFSET]
+    	@ and 	r1, r1, 0x01
+		mov 	r0, 0x1
+		bl		is_button_pressed
+    	cmp 	r0, 0x1
     	bne 	.L7
 		ldr		r0, [r7, #4]
 		bl 		inc_count
@@ -168,10 +266,12 @@ loop:
 
 .L7:		
     	@ Check if A4 is pressed
-    	ldr 	r0, =GPIOA_BASE
-    	ldr 	r1, [r0, GPIOx_IDR_OFFSET]
-    	and 	r1, r1, 0x10
-    	cmp 	r1, 0x10
+    	@ ldr 	r0, =GPIOA_BASE
+    	@ ldr 	r1, [r0, GPIOx_IDR_OFFSET]
+    	@ and 	r1, r1, 0x10
+		mov		r0, 0x10
+		bl		is_button_pressed
+    	cmp 	r0, 0x10
     	bne		.L8
 		ldr		r0, [r7, #4]
 		bl		dec_count
@@ -184,6 +284,4 @@ loop:
 		mov 	r1, r0
 		lsl 	r1, r1, #5
     	str 	r1, [r3, GPIOx_ODR_OFFSET]
-		mov		r0, #500    
-		bl   	delay
 		b 		loop
