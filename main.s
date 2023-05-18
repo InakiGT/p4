@@ -53,11 +53,11 @@ read_button_input:
 		push	{r7}
 		sub 	sp, sp, #4
 		add		r7, sp, #0
-		str 	r0, [r7, #4]
+		str 	r0, [r7]
 
 		ldr		r0, =GPIOA_BASE
 		ldr 	r1, [r0, GPIOx_IDR_OFFSET]
-		ldr 	r0, [r7, #4]
+		ldr 	r0, [r7]
 		and		r1, r1, r0
 		cmp		r1, r0
 		beq		.L1100
@@ -78,7 +78,7 @@ is_button_pressed:
 
 		# read button input
 		ldr		r0, [r7, #4]
-		bl		is_button_pressed
+		bl		read_button_input
 		ldr 	r3, [r7, #4]
 		cmp		r0, r3
 		beq		.L102
@@ -95,8 +95,8 @@ is_button_pressed:
 		str		r3, [r7, #8]
 
 		# for (int i = 0, i < 10, i++) 
-		mov     r0, #0 @ j = 0;
-        str     r0, [r7, #12]
+		mov     r3, #0 @ j = 0;
+        str     r3, [r7, #12]
         b       K3
 K2:     
 		# wait 5 ms
@@ -104,7 +104,7 @@ K2:
 		bl   	delay
 		# read button input
 		ldr		r0, [r7, #4]
-		bl		is_button_pressed
+		bl		read_button_input
 		ldr 	r3, [r7, #4]
 		cmp		r0, r3
 		beq 	K0
@@ -127,12 +127,12 @@ K0:
 		bx		lr
 
 K1:
-		ldr     r0, [r7, #12] @ j++;
-        add     r0, #1
-        str     r0, [r7, #12]
+		ldr     r3, [r7, #12] @ j++;
+        add     r3, #1
+        str     r3, [r7, #12]
 K3:     
-		ldr     r0, [r7, #12] @ j < 10;
-        cmp     r0, #10
+		ldr     r3, [r7, #12] @ j < 10;
+        cmp     r3, #10
         blt     K2
 
 		# return 0
@@ -282,6 +282,7 @@ loop:
     	ldr 	r3, =GPIOB_BASE
 		ldr		r0, [r7, #4]
 		mov 	r1, r0
+		mov     r1, 0xFFF
 		lsl 	r1, r1, #5
     	str 	r1, [r3, GPIOx_ODR_OFFSET]
 		b 		loop
