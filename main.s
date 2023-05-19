@@ -60,9 +60,9 @@ read_button_input:
 		ldr 	r0, [r7]
 		and		r1, r1, r0
 		cmp		r1, r0
-		beq		.L1100
+		beq		.L0
 		mov		r0, #0
-.L1100:
+.L0:
 		adds 	r7, r7, #4
 		mov		sp, r7
 		pop 	{r7}
@@ -81,15 +81,15 @@ is_button_pressed:
 		bl		read_button_input
 		ldr 	r3, [r7, #4]
 		cmp		r0, r3
-		beq		.L102
+		beq		L1
 		mov		r0, #0
-		adds	r7, r7, #8
+		adds	r7, r7, #16
 		mov		sp, r7
 		pop 	{r7}
 		pop 	{lr}
 		bx		lr
 
-.L102:
+L1:
 		# counter = 0
 		mov		r3, #0
 		str		r3, [r7, #8]
@@ -97,20 +97,20 @@ is_button_pressed:
 		# for (int i = 0, i < 10, i++) 
 		mov     r3, #0 @ j = 0;
         str     r3, [r7, #12]
-        b       K3
-K2:     
+        b       L2
+L5:     
 		# wait 5 ms
-		mov 	r0, #5
+		mov 	r0, #50
 		bl   	delay
 		# read button input
 		ldr		r0, [r7, #4]
 		bl		read_button_input
 		ldr 	r3, [r7, #4]
 		cmp		r0, r3
-		beq 	K0
+		beq 	L3
 		mov 	r3, #0
 		str		r3, [r7, #8]
-K0:		
+L3:		
 		# counter = counter + 1
 		ldr 	r3, [r7, #8]
 		add		r3, #1
@@ -118,7 +118,7 @@ K0:
 
 		ldr 	r3, [r7, #8]
 		cmp		r3, #4
-		blt		K1
+		blt		L4
 		ldr		r0, [r7, #4]
 		adds	r7, r7, #16
 		mov		sp, r7
@@ -126,14 +126,14 @@ K0:
 		pop 	{lr}
 		bx		lr
 
-K1:
+L4:
 		ldr     r3, [r7, #12] @ j++;
         add     r3, #1
         str     r3, [r7, #12]
-K3:     
+L2:     
 		ldr     r3, [r7, #12] @ j < 10;
         cmp     r3, #10
-        blt     K2
+        blt     L5
 
 		# return 0
 		mov 	r0, #0
@@ -240,9 +240,6 @@ __main:
 		str		r3, [r7, #4]
 loop:
 		@ Check if both A0 and A4 are pressed at the same time
-		@ ldr		r0, =GPIOA_BASE
-		@ ldr 	r1, [r0, GPIOx_IDR_OFFSET]
-		@ and		r1, r1, 0x11
 		mov 	r0, 0x11
 		bl 		is_button_pressed
 		cmp		r0, 0x11
@@ -252,10 +249,7 @@ loop:
 
 .L6:
     	@ Continue reading if any of them are pressed
-		@ @ Check if A0 is pressed
-    	@ ldr 	r0, =GPIOA_BASE
-    	@ ldr 	r1, [r0, GPIOx_IDR_OFFSET]
-    	@ and 	r1, r1, 0x01
+		@ Check if A0 is pressed
 		mov 	r0, 0x1
 		bl		is_button_pressed
     	cmp 	r0, 0x1
@@ -265,10 +259,6 @@ loop:
 		str		r0, [r7, #4]
 
 .L7:		
-    	@ Check if A4 is pressed
-    	@ ldr 	r0, =GPIOA_BASE
-    	@ ldr 	r1, [r0, GPIOx_IDR_OFFSET]
-    	@ and 	r1, r1, 0x10
 		mov		r0, 0x10
 		bl		is_button_pressed
     	cmp 	r0, 0x10
@@ -282,7 +272,6 @@ loop:
     	ldr 	r3, =GPIOB_BASE
 		ldr		r0, [r7, #4]
 		mov 	r1, r0
-		mov     r1, 0xFFF
 		lsl 	r1, r1, #5
     	str 	r1, [r3, GPIOx_ODR_OFFSET]
 		b 		loop
