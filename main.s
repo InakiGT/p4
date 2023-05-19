@@ -54,7 +54,6 @@ read_button_input:
 		sub 	sp, sp, #4
 		add		r7, sp, #0
 		str 	r0, [r7]
-
 		ldr		r0, =GPIOA_BASE
 		ldr 	r1, [r0, GPIOx_IDR_OFFSET]
 		ldr 	r0, [r7]
@@ -75,7 +74,6 @@ is_button_pressed:
 		sub		sp, sp, #16
 		add		r7, sp, #0
 		str 	r0, [r7, #4]
-
 		# read button input
 		ldr		r0, [r7, #4]
 		bl		read_button_input
@@ -88,12 +86,10 @@ is_button_pressed:
 		pop 	{r7}
 		pop 	{lr}
 		bx		lr
-
 L1:
 		# counter = 0
 		mov		r3, #0
 		str		r3, [r7, #8]
-
 		# for (int i = 0, i < 10, i++) 
 		mov     r3, #0 @ j = 0;
         str     r3, [r7, #12]
@@ -125,7 +121,6 @@ L3:
 		pop 	{r7}
 		pop 	{lr}
 		bx		lr
-
 L4:
 		ldr     r3, [r7, #12] @ j++;
         add     r3, #1
