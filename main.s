@@ -203,7 +203,7 @@ reset_count:
 
 __main:
 		push 	{r7, lr}
-		sub 	sp, sp, #8
+		sub 	sp, sp, #16
 		add		r7, sp, #0
 		
         @ enabling clock in port A, B and C
@@ -231,38 +231,49 @@ __main:
 		mov		r4, 0x0
 		str		r4, [r3, GPIOx_ODR_OFFSET]
 
+		# Set counter with 0
 		mov		r3, 0x0
 		str		r3, [r7, #4]
-loop:
-		@ Check if both A0 and A4 are pressed at the same time
-		mov 	r0, 0x11
-		bl 		is_button_pressed
-		cmp		r0, 0x11
-		bne		.L6
-		bl      reset_count
-		str		r0, [r7, #4]
 
-.L6:
-    	@ Continue reading if any of them are pressed
-		@ Check if A0 is pressed
+		# Set counter status as increment
+		mov		r3, 0x1
+		str		r3, [r7, #8]
+loop:
+		@ Check if A0 is pressed, if it is then change status
 		mov 	r0, 0x1
 		bl		is_button_pressed
     	cmp 	r0, 0x1
-    	bne 	.L7
-		ldr		r0, [r7, #4]
-		bl 		inc_count
-		str		r0, [r7, #4]
+    	bne 	.L6
+		ldr 	r3, [r7, #8]
+		eor		r3, r3, 0x1
+		str 	r3, [r7, #8]
 
-.L7:		
-		mov		r0, 0x10
-		bl		is_button_pressed
-    	cmp 	r0, 0x10
-    	bne		.L8
-		ldr		r0, [r7, #4]
+.L6:		
+		@ Check if A4 is pressed, if it is then changes speed
+		@ mov		r0, 0x10
+		@ bl		is_button_pressed
+    	@ cmp 	r0, 0x10
+    	@ bne		.L7
+		@ ldr		r0, [r7, #4]
+		@ bl		dec_count
+		@ str		r0, [r7, #4]
+
+.L7:
+		@ Check if counter status is 1 or 0
+		ldr 	r3, [r7, #8]
+		cmp 	r3, 0x1
+		bne 	.L8
+		ldr 	r0, [r7, #4]
+		bl		inc_count
+		str		r0, [r7, #4]
+		b 		.L11
+.L8:
+		ldr 	r0, [r7, #4]
 		bl		dec_count
 		str		r0, [r7, #4]
-
-.L8:
+.L11:
+		mov		r0, #500
+		bl		delay
 		@ Turn LEDs on
     	ldr 	r3, =GPIOB_BASE
 		ldr		r0, [r7, #4]
