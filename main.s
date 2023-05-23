@@ -146,14 +146,6 @@ __main:
 		orr r1, r1, #(1 << 0) @ Habilitar la detección de flanco de subida para EXTI0
 		str r1, [r0, EXTI_RTST_OFFSET]
 
-		   // Set the priority of the interrupt.
-		ldr r0, =stm32f10x
-		ldr r1, =stm32f10x.NVIC
-		ldr r2, =stm32f10x.NVIC_IPR2
-		ldr r3, [r2]
-		orr r3, r3, #(NVIC_IPR2_PRI0 << EXTI0_IRQn)
-		str r3, [r2]
-
 		@ Configurar y habilitar la interrupción
 		ldr r0, =NVIC_BASE
 		ldr r1, [r0, NVIC_ISER0_OFFSET]
