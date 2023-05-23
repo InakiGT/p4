@@ -93,6 +93,31 @@ __main:
         ldr     r1, =SYSTICK_BASE
         str     r0, [r1, STK_CTRL_OFFSET]
 
+		@ enabling clock in port A, B and C
+        ldr     r2, =RCC_BASE
+        mov     r3, 0x1C
+        str     r3, [r2, RCC_APB2ENR_OFFSET]
+
+		@ set pins PB5 - PB7 as digital output
+        ldr     r2, =GPIOB_BASE
+        ldr     r3, =0x33344444
+        str     r3, [r2, GPIOx_CRL_OFFSET]
+
+		@ set pins PB8 - PB15 as digital output
+        ldr     r2, =GPIOB_BASE
+        ldr     r3, =0x33333333
+        str     r3, [r2, GPIOx_CRH_OFFSET]
+
+        @ set pins PA0 and PA4 as digital input
+        ldr     r2, =GPIOA_BASE
+        ldr     r3, =0x44484448
+        str     r3, [r2, GPIOx_CRL_OFFSET]
+
+        # set led status initial value
+		ldr     r3, =GPIOB_BASE
+		mov		r4, 0x0
+		str		r4, [r3, GPIOx_ODR_OFFSET]
+
 		@ Configurar y habilitar la interrupción
 		ldr r0, =NVIC_BASE
 		ldr r1, [r0]
@@ -120,31 +145,7 @@ __main:
 		ldr r1, [r0]
 		orr r1, r1, #(1 << 0) @ Habilitar la detección de flanco de subida para EXTI0
 		str r1, [r0, EXTI_RTST_OFFSET]
-		
-        @ enabling clock in port A, B and C
-        ldr     r2, =RCC_BASE
-        mov     r3, 0x1C
-        str     r3, [r2, RCC_APB2ENR_OFFSET]
 
-		@ set pins PB5 - PB7 as digital output
-        ldr     r2, =GPIOB_BASE
-        ldr     r3, =0x33344444
-        str     r3, [r2, GPIOx_CRL_OFFSET]
-
-		@ set pins PB8 - PB15 as digital output
-        ldr     r2, =GPIOB_BASE
-        ldr     r3, =0x33333333
-        str     r3, [r2, GPIOx_CRH_OFFSET]
-
-        @ set pins PA0 and PA4 as digital input
-        ldr     r2, =GPIOA_BASE
-        ldr     r3, =0x44484448
-        str     r3, [r2, GPIOx_CRL_OFFSET]
-
-        # set led status initial value
-		ldr     r3, =GPIOB_BASE
-		mov		r4, 0x0
-		str		r4, [r3, GPIOx_ODR_OFFSET]
 
 		# Set counter with 0
 		mov		r3, 0x0
@@ -201,8 +202,6 @@ loop:
 .global EXTI0_IRQHandler
 .type EXTI0_IRQHandler, %function
 EXTI0_IRQHandler:
-  	@ Guardar los registros necesarios
-  	push 	{lr}
   
 	@ Leer el estado del pin A0
 	ldr 	r3, =GPIOB_BASE
@@ -215,5 +214,4 @@ EXTI0_IRQHandler:
 	orr r1, r1, #(1 << 0)  @ Establecer el bit 0 (o bit 1 para EXTI1)
 	str r1, [r0, EXTI_PR_OFFSET]
 
-	pop 	{lr}
 	bx		lr
