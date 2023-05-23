@@ -228,16 +228,28 @@ loop:
 .global EXTI0_IRQHandler
 .type EXTI0_IRQHandler, %function
 EXTI0_IRQHandler:
-	push 	{lr}
-	@ Leer el estado del pin A0
+
+	 @ Verificar el estado del pin A0
+    ldr r0, =GPIOA_BASE
+    ldr r1, [r0, GPIOx_IDR_OFFSET]         @ Leer el registro GPIOA_IDR para obtener el estado del pin A0
+    lsr r1, r1, #0              @ Desplazar el estado del pin A0 al bit 0 del registro r1
+    ands r1, r1, #1             @ Realizar una AND bit a bit para comprobar el estado del pin A0
+    cmp r1, #1                  @ Comparar el estado del pin A0 con 1 (lógico alto)
+	bne pin_low                 @ Si el pin A0 está en estado lógico bajo, saltar a la etiqueta pin_low
+
+    @ Realizar acciones cuando el pin A0 está en estado lógico alto
 	ldr 	r3, =GPIOB_BASE
 	mov		r1, 0xFFF
     str 	r1, [r3, GPIOx_ODR_OFFSET]
+    b done
 
+pin_low:
+    @ Realizar acciones cuando el pin A0 está en estado lógico bajo
+
+done:
   	ldr r0, =EXTI_BASE
-	ldr r1, [r0]
+	ldr r1, [r0, EXTI_PR_OFFSET]
 	orr r1, r1, #(1 << 0)  @ Establecer el bit 0 (o bit 1 para EXTI1)
 	str r1, [r0, EXTI_PR_OFFSET]
 
-	pop 	{lr}
 	bx		lr
