@@ -127,13 +127,13 @@ __main:
 		orr r1, r1, #(0x0 << 0) @ Configurar el pin A0
 		str r1, [r0, AFIO_EXTICR1_OFFSET]          @ Escribir el valor actualizado
 
-		ldr r0, =0xE000ED04
-		mov r1, #16
-		str r1, [r0]
+		@ ldr r0, =0xE000ED04
+		@ mov r1, #16
+		@ str r1, [r0]
 
-		ldr r0, =0xE000E180
-		mov r1, #1
-		str r1, [r0]
+		@ ldr r0, =0xE000E180
+		@ mov r1, #1
+		@ str r1, [r0]
 
 		ldr r0, =EXTI_BASE      @ Registro de máscara de interrupción de eventos
     	ldr r1, [r0, EXTI_IMR_OFFSET]            @ Cargar el valor actual del registro
@@ -149,7 +149,7 @@ __main:
 		@ Configurar y habilitar la interrupción
 		ldr r0, =NVIC_BASE
 		ldr r1, [r0, EXTI_RTST_OFFSET]
-		orr r1, r1, #(1 << 6)  @ Habilitar la interrupción EXTI0
+		orr r1, r1, #(1 << 17)  @ Habilitar la interrupción EXTI0
 		str r1, [r0, NVIC_ISER0_OFFSET]
 
 
