@@ -5,6 +5,7 @@
 	.include "ivt.s"
 	.include "gpio_map.inc"
 	.include "rcc_map.inc"
+	.include "systick_map.inc"
 	
 	.extern delay
 
@@ -170,6 +171,15 @@ __main:
 		push 	{r7, lr}
 		sub 	sp, sp, #16
 		add		r7, sp, #0
+
+		mov     r0, #1000
+		ldr 	r3, =SYSTICK_BASE
+        str     r0, [r3, STK_LOAD_OFFSET]
+
+        @ Habilitar interrupción de SysTick y configurar el temporizador en modo de cuenta
+        mov     r0, #7
+        ldr     r1, =SYSTICK_BASE
+        str     r0, [r1, STK_CTRL_OFFSET]
 		
         @ enabling clock in port A, B and C
         ldr     r2, =RCC_BASE
