@@ -153,7 +153,7 @@ __main:
 		ldr r1, =0x40010088
 		ldr r0, [r1]
 		and r0, r0, #(~(0xF << (8 * 6)))
-		ldr r3, #=(1 << (8 * 6))
+		ldr r3, =(1 << (8 * 6))
 		str	r3, [r1]
 				
 		@ Configurar y habilitar la interrupción
