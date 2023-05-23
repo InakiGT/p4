@@ -150,11 +150,9 @@ __main:
     	orr r1, r1, #(1 << 0)   @ Habilitar la interrupción EXTI0
     	str r1, [r0, EXTI_IMR_OFFSET]
 
-		ldr r1, =0x40010088
-		ldr r0, [r1]
-		and r0, r0, #(~(0xF << (8 * 6)))
-		ldr r3, =(1 << (8 * 6))
-		str	r3, [r1]
+		ldr r0, =NVIC_BASE
+		mov r1, #1
+		strb r1, [r0, #0x14]
 				
 		@ Configurar y habilitar la interrupción
 		ldr r0, =NVIC_BASE
