@@ -122,7 +122,7 @@ __main:
 		@ Configurar el pin A0 para generar una interrupción EXTI0
 		ldr r0, =AFIO_BASE  @ Registro de configuración de EXTI0
 		ldr r1, [r0, AFIO_EXTICR1_OFFSET]   
-		mov	r3, 0xFFF0       @ Leer el valor actual
+		mov	r3, 0x000F       @ Leer el valor actual
 		and r1, r1, r3 @ Limpiar los bits 0 a 3 para configurar el pin A0
 		orr r1, r1, #(0x0 << 0) @ Configurar el pin A0
 		str r1, [r0, AFIO_EXTICR1_OFFSET]          @ Escribir el valor actualizado
@@ -135,17 +135,27 @@ __main:
 		@ mov r1, #1
 		@ str r1, [r0]
 
-		ldr r0, =EXTI_BASE      @ Registro de máscara de interrupción de eventos
-    	ldr r1, [r0, EXTI_IMR_OFFSET]          @ Cargar el valor actual del registro
-    	orr r1, r1, #(1 << 0)   @ Habilitar la interrupción EXTI0
-    	str r1, [r0, EXTI_IMR_OFFSET]
-				
-		@ Configurar el registro EXTI0 para detectar flancos de subida
 		ldr r0, =EXTI_BASE
 		ldr r1, [r0, EXTI_RTST_OFFSET]
 		orr r1, r1, #(1 << 0) @ Habilitar la detección de flanco de subida para EXTI0
 		str r1, [r0, EXTI_RTST_OFFSET]
 
+		ldr r0, =EXTI_BASE
+		ldr r1, [r0, EXTI_FTST_OFFSET]
+		orr r1, r1, #(~(1 << 0)) @ Habilitar la detección de flanco de subida para EXTI0
+		str r1, [r0, EXTI_FTST_OFFSET]
+
+		ldr r0, =EXTI_BASE      @ Registro de máscara de interrupción de eventos
+    	ldr r1, [r0, EXTI_IMR_OFFSET]          @ Cargar el valor actual del registro
+    	orr r1, r1, #(1 << 0)   @ Habilitar la interrupción EXTI0
+    	str r1, [r0, EXTI_IMR_OFFSET]
+
+		ldr r1, =0x40010088
+		ldr r0, [r1]
+		and r0, r0, #(~(0xF << (8 * 6)))
+		ldr r3, #=(1 << (8 * 6))
+		str	r3, [r1]
+				
 		@ Configurar y habilitar la interrupción
 		ldr r0, =NVIC_BASE
 		ldr r1, [r0, NVIC_ISER0_OFFSET]
