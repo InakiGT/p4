@@ -6,6 +6,9 @@
 	.include "gpio_map.inc"
 	.include "rcc_map.inc"
 	.include "systick_map.inc"
+	.include "nvic_reg_map.inc"
+	.include "afio_map.inc"
+	.include "exti_map.inc"
 	
 	.extern delay
 
@@ -180,6 +183,26 @@ __main:
         mov     r0, #7
         ldr     r1, =SYSTICK_BASE
         str     r0, [r1, STK_CTRL_OFFSET]
+
+		@ Configurar y habilitar la interrupción
+		ldr r0, =NVIC_BASE
+		ldr r1, [r0]
+		orr r1, r1, #(1 << 17)  @ Habilitar la interrupción EXTI0
+		str r1, [r0, NVIC_ISER0_OFFSET]
+		
+		@ Configurar el pin A0 para generar una interrupción EXTI0
+		ldr r0, =AFIO_BASE  @ Registro de configuración de EXTI0
+		ldr r1, [r0]   
+		mov	r3, 0xFFF0       @ Leer el valor actual
+		and r1, r1, r3 @ Limpiar los bits 0 a 3 para configurar el pin A0
+		orr r1, r1, #(0x0 << 0) @ Configurar el pin A0
+		str r1, [r0, AFIO_EXTICR1_OFFSET]          @ Escribir el valor actualizado
+		
+		@ Configurar el registro EXTI0 para detectar flancos de subida
+		ldr r0, =EXTI_BASE
+		ldr r1, [r0]
+		orr r1, r1, #(1 << 0) @ Habilitar la detección de flanco de subida para EXTI0
+		str r1, [r0, EXTI_RTST_OFFSET]
 		
         @ enabling clock in port A, B and C
         ldr     r2, =RCC_BASE
@@ -256,3 +279,24 @@ loop:
 		lsl 	r1, r1, #5
     	str 	r1, [r3, GPIOx_ODR_OFFSET]
 		b 		loop
+
+.section .text
+.global EXTI0_IRQHandler
+.type EXTI0_IRQHandler, %function
+
+EXTI0_IRQHandler:
+  	@ Guardar los registros necesarios
+  	push 	{lr}
+  
+	@ Leer el estado del pin A0
+	ldr 	r3, =GPIOB_BASE
+	mov		r1, 0xFFF
+	lsl 	r1, r1, #5
+    str 	r1, [r3, GPIOx_ODR_OFFSET]
+
+  	ldr r0, =EXTI_BASE
+	ldr r1, [r0]
+	orr r1, r1, #(1 << 0)  @ Establecer el bit 0 (o bit 1 para EXTI1)
+	str r1, [r0, EXTI_PR_OFFSET]
+
+  pop 	{lr}
