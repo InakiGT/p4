@@ -165,7 +165,7 @@ __main:
 		@ Configurar la rutina de interrupción EXTI0_IRQHandler
 		ldr r0, =EXTI0_IRQHandler
 		ldr r1, =0xE000E014          @ Dirección de inicio de la tabla de vectores de interrupción
-		ldr r2, #6           @ Número de la interrupción EXTI0
+		ldr r2, =0x6           @ Número de la interrupción EXTI0
 		lsl r2, r2, #2               @ Calcular el offset de la entrada de la tabla de vectores
 		add r1, r1, r2               @ Calcular la dirección de la entrada en la tabla de vectores
 		str r0, [r1]                 @ Guardar la dirección de la rutina de interrupción EXTI0_IRQHandler en la tabla de vectores
