@@ -249,5 +249,3 @@ done:
 	ldr r1, [r0, EXTI_PR_OFFSET]
 	orr r1, r1, #(1 << 0)  @ Establecer el bit 0 (o bit 1 para EXTI1)
 	str r1, [r0, EXTI_PR_OFFSET]
-
-	bx		lr
