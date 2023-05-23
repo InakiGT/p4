@@ -95,7 +95,7 @@ __main:
 
 		@ enabling clock in port A, B and C
         ldr     r2, =RCC_BASE
-        mov     r3, 0x1C
+        mov     r3, 0x401C
         str     r3, [r2, RCC_APB2ENR_OFFSET]
 
 		@ set pins PB5 - PB7 as digital output
