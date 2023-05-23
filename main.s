@@ -12,97 +12,6 @@
 	
 	.extern delay
 
-# This subrutine reads if buttons are pressed
-read_button_input:
-		push	{r7}
-		sub 	sp, sp, #4
-		add		r7, sp, #0
-		str 	r0, [r7]
-		ldr		r0, =GPIOA_BASE
-		ldr 	r1, [r0, GPIOx_IDR_OFFSET]
-		ldr 	r0, [r7]
-		and		r1, r1, r0
-		cmp		r1, r0
-		beq		.L0
-		mov		r0, #0
-.L0:
-		adds 	r7, r7, #4
-		mov		sp, r7
-		pop 	{r7}
-		bx		lr
-
-
-# This subrutine aprove if a combination of buttons are pressed
-is_button_pressed:
-		push 	{r7, lr}
-		sub		sp, sp, #16
-		add		r7, sp, #0
-		str 	r0, [r7, #4]
-		# read button input
-		ldr		r0, [r7, #4]
-		bl		read_button_input
-		ldr 	r3, [r7, #4]
-		cmp		r0, r3
-		beq		L1
-		mov		r0, #0
-		adds	r7, r7, #16
-		mov		sp, r7
-		pop 	{r7}
-		pop 	{lr}
-		bx		lr
-L1:
-		# counter = 0
-		mov		r3, #0
-		str		r3, [r7, #8]
-		# for (int i = 0, i < 10, i++) 
-		mov     r3, #0 @ j = 0;
-        str     r3, [r7, #12]
-        b       L2
-L5:     
-		# wait 5 ms
-		mov 	r0, #50
-		bl   	delay
-		# read button input
-		ldr		r0, [r7, #4]
-		bl		read_button_input
-		ldr 	r3, [r7, #4]
-		cmp		r0, r3
-		beq 	L3
-		mov 	r3, #0
-		str		r3, [r7, #8]
-L3:		
-		# counter = counter + 1
-		ldr 	r3, [r7, #8]
-		add		r3, #1
-		str 	r3, [r7, #8]
-
-		ldr 	r3, [r7, #8]
-		cmp		r3, #4
-		blt		L4
-		ldr		r0, [r7, #4]
-		adds	r7, r7, #16
-		mov		sp, r7
-		pop 	{r7}
-		pop 	{lr}
-		bx		lr
-L4:
-		ldr     r3, [r7, #12] @ j++;
-        add     r3, #1
-        str     r3, [r7, #12]
-L2:     
-		ldr     r3, [r7, #12] @ j < 10;
-        cmp     r3, #10
-        blt     L5
-
-		# return 0
-		mov 	r0, #0
-		adds	r7, r7, #16
-		mov		sp, r7
-		pop 	{r7}
-		pop 	{lr}
-		bx		lr
-
-
 inc_count:
     	@ Increase counter
 		push 	{r7, lr}
@@ -197,7 +106,15 @@ __main:
 		and r1, r1, r3 @ Limpiar los bits 0 a 3 para configurar el pin A0
 		orr r1, r1, #(0x0 << 0) @ Configurar el pin A0
 		str r1, [r0, AFIO_EXTICR1_OFFSET]          @ Escribir el valor actualizado
-		
+
+		ldr r0, =0xE000ED04
+		mov r1, #16
+		str r1, [r0]
+
+		ldr r0, =0xE000E180
+		mov r1, #1
+		str r1, [r0]
+				
 		@ Configurar el registro EXTI0 para detectar flancos de subida
 		ldr r0, =EXTI_BASE
 		ldr r1, [r0]
@@ -283,7 +200,6 @@ loop:
 .section .text
 .global EXTI0_IRQHandler
 .type EXTI0_IRQHandler, %function
-
 EXTI0_IRQHandler:
   	@ Guardar los registros necesarios
   	push 	{lr}
@@ -299,4 +215,5 @@ EXTI0_IRQHandler:
 	orr r1, r1, #(1 << 0)  @ Establecer el bit 0 (o bit 1 para EXTI1)
 	str r1, [r0, EXTI_PR_OFFSET]
 
-  pop 	{lr}
+	pop 	{lr}
+	bx		lr
