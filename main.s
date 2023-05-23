@@ -202,7 +202,7 @@ loop:
 .global EXTI0_IRQHandler
 .type EXTI0_IRQHandler, %function
 EXTI0_IRQHandler:
-  
+	push 	{lr}
 	@ Leer el estado del pin A0
 	ldr 	r3, =GPIOB_BASE
 	mov		r1, 0xFFF
@@ -214,4 +214,5 @@ EXTI0_IRQHandler:
 	orr r1, r1, #(1 << 0)  @ Establecer el bit 0 (o bit 1 para EXTI1)
 	str r1, [r0, EXTI_PR_OFFSET]
 
+	pop 	{lr}
 	bx		lr
