@@ -140,7 +140,7 @@ __main:
 		mov r1, #1
 		str r1, [r0]
 
-		ldr r0, =EXTI_IMR       @ Registro de máscara de interrupción de eventos
+		ldr r0, =EXTI_BASE      @ Registro de máscara de interrupción de eventos
     	ldr r1, [r0]            @ Cargar el valor actual del registro
     	orr r1, r1, #(1 << 0)   @ Habilitar la interrupción EXTI0
     	str r1, [r0, EXTI_IMR_OFFSET]
