@@ -118,12 +118,7 @@ __main:
 		mov		r4, 0x0
 		str		r4, [r3, GPIOx_ODR_OFFSET]
 
-		@ Configurar y habilitar la interrupción
-		ldr r0, =NVIC_BASE
-		ldr r1, [r0]
-		orr r1, r1, #(1 << 17)  @ Habilitar la interrupción EXTI0
-		str r1, [r0, NVIC_ISER0_OFFSET]
-		
+
 		@ Configurar el pin A0 para generar una interrupción EXTI0
 		ldr r0, =AFIO_BASE  @ Registro de configuración de EXTI0
 		ldr r1, [r0]   
@@ -150,6 +145,12 @@ __main:
 		ldr r1, [r0]
 		orr r1, r1, #(1 << 0) @ Habilitar la detección de flanco de subida para EXTI0
 		str r1, [r0, EXTI_RTST_OFFSET]
+
+		@ Configurar y habilitar la interrupción
+		ldr r0, =NVIC_BASE
+		ldr r1, [r0]
+		orr r1, r1, #(1 << 6)  @ Habilitar la interrupción EXTI0
+		str r1, [r0, NVIC_ISER0_OFFSET]
 
 
 		# Set counter with 0
