@@ -12,6 +12,8 @@
 	
 	.extern delay
 
+	.equ SYSCFG_BASE, 0x40013800
+
 inc_count:
     	@ Increase counter
 		push 	{r7, lr}
@@ -98,6 +100,12 @@ __main:
         mov     r3, 0x401C
         str     r3, [r2, RCC_APB2ENR_OFFSET]
 
+		@ Habilitar el reloj para SYSCFG
+		ldr r0, =RCC_BASE
+		ldr r1, [r0]
+		orr r1, r1, #(1 << 14)  // Habilitar el reloj para SYSCFG
+		str r1, [r0]
+
 		@ set pins PB5 - PB7 as digital output
         ldr     r2, =GPIOB_BASE
         ldr     r3, =0x33344444
@@ -127,13 +135,12 @@ __main:
 		orr r1, r1, #(0x0 << 0) @ Configurar el pin A0
 		str r1, [r0, AFIO_EXTICR1_OFFSET]          @ Escribir el valor actualizado
 
-		@ ldr r0, =0xE000ED04
-		@ mov r1, #16
-		@ str r1, [r0]
+		@ Configurar la interrupción externa EXTI0
+		ldr r0, =SYSCFG_BASE
+		ldr r1, [r0, #0x00]
+		orr r1, r1, #(1 << 0) // Habilitar la conexión de EXTI0 al pin A0
+		str r1, [r0, #0x00]
 
-		@ ldr r0, =0xE000E180
-		@ mov r1, #1
-		@ str r1, [r0]
 
 		ldr r0, =EXTI_BASE
 		ldr r1, [r0, EXTI_RTST_OFFSET]
@@ -142,7 +149,7 @@ __main:
 
 		ldr r0, =EXTI_BASE
 		ldr r1, [r0, EXTI_FTST_OFFSET]
-		orr r1, r1, #(~(1 << 0)) @ Habilitar la detección de flanco de subida para EXTI0
+		orr r1, r1, #(~(1 << 0)) @ Deshabilitar la detección de flanco de subida para EXTI0
 		str r1, [r0, EXTI_FTST_OFFSET]
 
 		ldr r0, =EXTI_BASE      @ Registro de máscara de interrupción de eventos
@@ -236,16 +243,7 @@ EXTI0_IRQHandler:
 	bne pin_low                 @ Si el pin A0 está en estado lógico bajo, saltar a la etiqueta pin_low
 
     @ Realizar acciones cuando el pin A0 está en estado lógico alto
-	ldr 	r3, =GPIOB_BASE
-	mov		r1, 0xFFF
-    str 	r1, [r3, GPIOx_ODR_OFFSET]
-    b done
-
-pin_low:
-    @ Realizar acciones cuando el pin A0 está en estado lógico bajo
-
-done:
-  	ldr r0, =EXTI_BASE
-	ldr r1, [r0, EXTI_PR_OFFSET]
-	orr r1, r1, #(1 << 0)  @ Establecer el bit 0 (o bit 1 para EXTI1)
-	str r1, [r0, EXTI_PR_OFFSET]
+    ldr r0, =0x40010814 // Dirección del registro EXTI_PR
+    mov r1, #(1 << 0) // Bit 0 corresponde a EXTI0
+    str r1, [r0]
+    bx lr
