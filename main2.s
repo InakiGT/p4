@@ -69,11 +69,10 @@ EXTI_Init:
     bx lr
 
 .global EXTI3_IRQHandler
-
 EXTI3_IRQHandler:
     @ Check for EXTI 3 interrupt flag
-    ldr r0, =0x40010400  @ Dirección base del registro EXTI
-    ldr r1, [r0, #0x14]  @ Leer el registro EXTI_PR1
+    ldr r0, =EXTI_BASE  @ Dirección base del registro EXTI
+    ldr r1, [r0, EXTI_PR_OFFSET]  @ Leer el registro EXTI_PR1
     ldr r2, =0x00000008  @ Máscara para la bandera de interrupción EXTI 3
     tst r1, r2           @ Comprobar la bandera de interrupción EXTI 3
     bne toggle_led       @ Saltar a toggle_led si la bandera está activa
@@ -113,8 +112,10 @@ __main:
 
         # set led status initial value
     ldr     r3, =GPIOB_BASE
-    mov		r4, 0x0
+    mov		r4, 0xFFF
     str		r4, [r3, GPIOx_ODR_OFFSET]
+
+    cpsie   i
 
     bl  EXTI_Init
 loop:
