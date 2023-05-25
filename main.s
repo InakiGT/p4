@@ -11,6 +11,7 @@
 	.include "exti_map.inc"
 	
 	.extern delay
+	.extern SysTick_Initialize
 
 inc_count:
     	@ Increase counter
@@ -90,14 +91,8 @@ __main:
 		@ bic		r1, r1, 0xF @ Habilitar el reloj de SYSCFG
 		@ str 	r1, [r0, AFIO_EXTICR1_OFFSET]
 
-		mov     r0, #1000
-		ldr 	r3, =SYSTICK_BASE
-        str     r0, [r3, STK_LOAD_OFFSET]
-
-        @ Habilitar interrupción de SysTick y configurar el temporizador en modo de cuenta
-        mov     r0, #7
-        ldr     r1, =SYSTICK_BASE
-        str     r0, [r1, STK_CTRL_OFFSET]
+		bl SysTick_Initialize
+		mov r10, #10000
 
 		@ enabling clock in port A, B and C
         ldr     r2, =RCC_BASE

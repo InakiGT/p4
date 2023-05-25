@@ -34,7 +34,7 @@
 .word   Default_Handler + 1        @  DebugMonitor
 .word   Default_Handler + 1        @  ----
 .word   Default_Handler + 1        @  PendSV
-.word   Default_Handler + 1        @  SysTick
+.word   SysTick_Handler + 1        @  SysTick
 .word   Default_Handler + 1        @  0 WWDG
 .word   Default_Handler + 1        @  1 PVD
 .word   Default_Handler + 1        @  2 TAMPER
