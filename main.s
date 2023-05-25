@@ -97,7 +97,7 @@ __main:
 
 		@ enabling clock in port A, B and C
         ldr     r2, =RCC_BASE
-        mov     r3, 0x401C
+        mov     r3, 0x1C
         str     r3, [r2, RCC_APB2ENR_OFFSET]
 
 		@ Habilitar el reloj para SYSCFG
@@ -178,34 +178,13 @@ __main:
 		@ Habilitar las interrupciones
 		cpsie i   
 
-		# Set counter with 0
+		@ Set counter with 0
 		mov		r3, 0x0
 		str		r3, [r7, #4]
 
-		# Set counter status as increment
-		mov		r3, 0x1
-		str		r3, [r7, #8]
+		@ Set counter status as increment
+		mov		r9, 0x1
 loop:
-		@ Check if A0 is pressed, if it is then change status
-		@ mov 	r0, 0x1
-		@ bl		is_button_pressed
-    	@ cmp 	r0, 0x1
-    	@ bne 	.L6
-		@ ldr 	r3, [r7, #8]
-		@ eor		r3, r3, 0x1
-		@ str 	r3, [r7, #8]
-
-.L6:		
-		@ Check if A4 is pressed, if it is then changes speed
-		@ mov		r0, 0x10
-		@ bl		is_button_pressed
-    	@ cmp 	r0, 0x10
-    	@ bne		.L7
-		@ ldr		r0, [r7, #4]
-		@ bl		dec_count
-		@ str		r0, [r7, #4]
-
-.L7:
 		@ Check if counter status is 1 or 0
 		ldr 	r3, [r7, #8]
 		cmp 	r3, 0x1
