@@ -134,11 +134,9 @@ __main:
 		str r1, [r0]
 
 		ldr r0, =SYSCFG_BASE
-		ldr r1, [r0, #0x0C]
-		ldr r2, =(0xF << 0) @ Configurar el pin A0 como fuente de EXTI0
-		and r1, r1, lsl #4
-		orr r1, r1, r2
-		str r1, [r0, #0x0C]
+		ldr r1, [r0, #0x00]
+		orr r1, r1, #(0xF << 0) // Configurar el pin A0 como fuente de EXTI0
+		str r1, [r0, #0x00]
 
 		ldr r0, =EXTI_BASE      @ Registro de máscara de interrupción de eventos
     	ldr r1, [r0, EXTI_IMR_OFFSET]          @ Cargar el valor actual del registro
