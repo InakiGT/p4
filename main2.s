@@ -84,9 +84,7 @@ EXTI3_IRQHandler:
 @ toggle_led:
 @     @ Toggle LED
     ldr 	r3, =GPIOB_BASE
-    ldr		r0, [r7, #4]
     mov 	r1, 0xFFF
-    lsl 	r1, r1, #5
     str 	r1, [r3, GPIOx_ODR_OFFSET]
     bx      lr  @ Volver a comprobar la bandera EXTI 3
 
