@@ -19,7 +19,7 @@
 .extern EXTI0_IRQHandler
 .section .isr_vector
 
-.word   0x20001000                 @  stack pointer initial value
+.word   0x20005000                 @  stack pointer initial value
 .word   Reset_Handler   + 1        @  reset handler pointer
 .word   Default_Handler + 1        @  NMI
 .word   Default_Handler + 1        @  HardFault
