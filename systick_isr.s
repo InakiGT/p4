@@ -7,8 +7,5 @@
 .global SysTick_Handler
 
 SysTick_Handler:
-    mov     r0, #500
-    bl      delay
-
     bx      lr
 .size   SysTick_Handler, .-SysTick_Handler
