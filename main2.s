@@ -71,24 +71,24 @@ EXTI_Init:
 .global EXTI3_IRQHandler
 EXTI3_IRQHandler:
     @ Check for EXTI 3 interrupt flag
-    ldr r0, =EXTI_BASE  @ Dirección base del registro EXTI
-    ldr r1, [r0, EXTI_PR_OFFSET]  @ Leer el registro EXTI_PR1
-    ldr r2, =0x00000008  @ Máscara para la bandera de interrupción EXTI 3
-    tst r1, r2           @ Comprobar la bandera de interrupción EXTI 3
-    bne toggle_led       @ Saltar a toggle_led si la bandera está activa
+@     ldr r0, =EXTI_BASE  @ Dirección base del registro EXTI
+@     ldr r1, [r0, EXTI_PR_OFFSET]  @ Leer el registro EXTI_PR1
+@     ldr r2, =0x00000008  @ Máscara para la bandera de interrupción EXTI 3
+@     tst r1, r2           @ Comprobar la bandera de interrupción EXTI 3
+@     bne toggle_led       @ Saltar a toggle_led si la bandera está activa
 
-    @ Clear interrupt pending request
-    str r2, [r0, #0x14]  @ Escribir 1 para borrar la bandera EXTI 3
-    bx lr                @ Salir de la ISR
+@     @ Clear interrupt pending request
+@     str r2, [r0, #0x14]  @ Escribir 1 para borrar la bandera EXTI 3
+@     bx lr                @ Salir de la ISR
 
-toggle_led:
-    @ Toggle LED
+@ toggle_led:
+@     @ Toggle LED
     ldr 	r3, =GPIOB_BASE
     ldr		r0, [r7, #4]
     mov 	r1, 0xFFF
     lsl 	r1, r1, #5
     str 	r1, [r3, GPIOx_ODR_OFFSET]
-    b EXTI3_IRQHandler  @ Volver a comprobar la bandera EXTI 3
+    bx      lr  @ Volver a comprobar la bandera EXTI 3
 
 .section .text
 .align  1
