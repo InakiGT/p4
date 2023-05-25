@@ -233,14 +233,11 @@ loop:
 .global EXTI0_IRQHandler
 .type EXTI0_IRQHandler, %function
 EXTI0_IRQHandler:
-
-	 @ Verificar el estado del pin A0
-    ldr r0, =GPIOA_BASE
-    ldr r1, [r0, GPIOx_IDR_OFFSET]         @ Leer el registro GPIOA_IDR para obtener el estado del pin A0
-    lsr r1, r1, #0              @ Desplazar el estado del pin A0 al bit 0 del registro r1
-    ands r1, r1, #1             @ Realizar una AND bit a bit para comprobar el estado del pin A0
-    cmp r1, #1                  @ Comparar el estado del pin A0 con 1 (lógico alto)
-	bne pin_low                 @ Si el pin A0 está en estado lógico bajo, saltar a la etiqueta pin_low
+	@ Turn LEDs on
+    ldr 	r3, =GPIOB_BASE
+	mov 	r1, 0xFFF
+	lsl 	r1, r1, #5
+    str 	r1, [r3, GPIOx_ODR_OFFSET]
 
     @ Realizar acciones cuando el pin A0 está en estado lógico alto
     ldr r0, =0x40010814 // Dirección del registro EXTI_PR
