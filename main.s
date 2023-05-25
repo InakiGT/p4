@@ -133,18 +133,18 @@ __main:
 
 
 		@ Configurar el pin A0 para generar una interrupción EXTI0
-		ldr r0, =AFIO_BASE  @ Registro de configuración de EXTI0
-		ldr r1, [r0, AFIO_EXTICR1_OFFSET]   
-		mov	r3, 0x000F       @ Leer el valor actual
-		and r1, r1, r3 @ Limpiar los bits 0 a 3 para configurar el pin A0
-		orr r1, r1, #(0x0 << 0) @ Configurar el pin A0
-		str r1, [r0, AFIO_EXTICR1_OFFSET]          @ Escribir el valor actualizado
+		@ ldr r0, =AFIO_BASE  @ Registro de configuración de EXTI0
+		@ ldr r1, [r0, AFIO_EXTICR1_OFFSET]   
+		@ mov	r3, 0x000F       @ Leer el valor actual
+		@ and r1, r1, r3 @ Limpiar los bits 0 a 3 para configurar el pin A0
+		@ orr r1, r1, #(0x0 << 0) @ Configurar el pin A0
+		@ str r1, [r0, AFIO_EXTICR1_OFFSET]          @ Escribir el valor actualizado
 
 		@ Configurar la interrupción externa EXTI0
-		ldr r0, =SYSCFG_BASE
-		ldr r1, [r0, #0x00]
-		orr r1, r1, #(1 << 0) // Habilitar la conexión de EXTI0 al pin A0
-		str r1, [r0, #0x00]
+		@ ldr r0, =SYSCFG_BASE
+		@ ldr r1, [r0, #0x00]
+		@ orr r1, r1, #(1 << 0) // Habilitar la conexión de EXTI0 al pin A0
+		@ str r1, [r0, #0x00]
 
 		ldr r0, =EXTI_BASE      @ Registro de máscara de interrupción de eventos
     	ldr r1, [r0, EXTI_IMR_OFFSET]          @ Cargar el valor actual del registro
