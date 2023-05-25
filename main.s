@@ -171,20 +171,20 @@ loop:
     	str 	r1, [r3, GPIOx_ODR_OFFSET]
 		b 		loop
 
-.section .text
-.global EXTI0_IRQHandler
-.type EXTI0_IRQHandler, %function
-EXTI0_IRQHandler:
-	@ Turn LEDs on
-    ldr 	r3, =GPIOB_BASE
-	mov 	r1, 0xFFF
-	lsl 	r1, r1, #5
-    str 	r1, [r3, GPIOx_ODR_OFFSET]
+@ .section .text
+@ .global EXTI0_IRQHandler
+@ .type EXTI0_IRQHandler, %function
+@ EXTI0_IRQHandler:
+@ 	@ Turn LEDs on
+@     ldr 	r3, =GPIOB_BASE
+@ 	mov 	r1, 0xFFF
+@ 	lsl 	r1, r1, #5
+@     str 	r1, [r3, GPIOx_ODR_OFFSET]
 
-    @ Realizar acciones cuando el pin A0 está en estado lógico alto
-    ldr r0, =EXTI_BASE
-    ldr r1, [r0, #0x14]
-    mov r2, #(1 << 0)
-    str r2, [r0, #0x14]
+@     @ Realizar acciones cuando el pin A0 está en estado lógico alto
+@     ldr r0, =EXTI_BASE
+@     ldr r1, [r0, #0x14]
+@     mov r2, #(1 << 0)
+@     str r2, [r0, #0x14]
 
-    bx lr
+@     bx lr

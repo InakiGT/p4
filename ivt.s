@@ -16,7 +16,7 @@
 .extern Reset_Handler
 .extern Default_Handler
 .extern SysTick_Handler
-.extern EXTI0_IRQHandler
+@ .extern EXTI0_IRQHandler
 .section .isr_vector
 
 .word   0x20005000                 @  stack pointer initial value
