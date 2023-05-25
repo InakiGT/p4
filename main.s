@@ -146,39 +146,21 @@ __main:
 		orr r1, r1, #(1 << 0) // Habilitar la conexión de EXTI0 al pin A0
 		str r1, [r0, #0x00]
 
+		ldr r0, =EXTI_BASE      @ Registro de máscara de interrupción de eventos
+    	ldr r1, [r0, EXTI_IMR_OFFSET]          @ Cargar el valor actual del registro
+    	orr r1, r1, #(1 << 0)   @ Habilitar la interrupción EXTI0
+    	str r1, [r0, EXTI_IMR_OFFSET]
 
 		ldr r0, =EXTI_BASE
 		ldr r1, [r0, EXTI_RTST_OFFSET]
 		orr r1, r1, #(1 << 0) @ Habilitar la detección de flanco de subida para EXTI0
 		str r1, [r0, EXTI_RTST_OFFSET]
 
-		ldr r0, =EXTI_BASE
-		ldr r1, [r0, EXTI_FTST_OFFSET]
-		orr r1, r1, #(~(1 << 0)) @ Deshabilitar la detección de flanco de subida para EXTI0
-		str r1, [r0, EXTI_FTST_OFFSET]
-
-		ldr r0, =EXTI_BASE      @ Registro de máscara de interrupción de eventos
-    	ldr r1, [r0, EXTI_IMR_OFFSET]          @ Cargar el valor actual del registro
-    	orr r1, r1, #(1 << 0)   @ Habilitar la interrupción EXTI0
-    	str r1, [r0, EXTI_IMR_OFFSET]
-
-		ldr r0, =NVIC_BASE
-		mov r1, #1
-		strb r1, [r0, #0x14]
-				
 		@ Configurar y habilitar la interrupción
 		ldr r0, =NVIC_BASE
 		ldr r1, [r0, NVIC_ISER0_OFFSET]
 		orr r1, r1, #(1 << 6)  @ Habilitar la interrupción EXTI0
 		str r1, [r0, NVIC_ISER0_OFFSET]
-
-		@ Configurar la rutina de interrupción EXTI0_IRQHandler
-		ldr r0, =EXTI0_IRQHandler
-		ldr r1, =0xE000E014          @ Dirección de inicio de la tabla de vectores de interrupción
-		ldr r2, =0x6           @ Número de la interrupción EXTI0
-		lsl r2, r2, #2               @ Calcular el offset de la entrada de la tabla de vectores
-		add r1, r1, r2               @ Calcular la dirección de la entrada en la tabla de vectores
-		str r0, [r1]                 @ Guardar la dirección de la rutina de interrupción EXTI0_IRQHandler en la tabla de vectores
 
 		@ Habilitar las interrupciones
 		cpsie i   
@@ -224,7 +206,9 @@ EXTI0_IRQHandler:
     str 	r1, [r3, GPIOx_ODR_OFFSET]
 
     @ Realizar acciones cuando el pin A0 está en estado lógico alto
-    ldr r0, =0x40010814 // Dirección del registro EXTI_PR
-    mov r1, #(1 << 0) // Bit 0 corresponde a EXTI0
-    str r1, [r0]
+    ldr r0, =EXTI_BASE
+    ldr r1, [r0, #0x14]
+    mov r2, #(1 << 0)
+    str r2, [r0, #0x14]
+
     bx lr
