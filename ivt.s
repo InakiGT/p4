@@ -16,7 +16,7 @@
 .extern Reset_Handler
 .extern Default_Handler
 .extern SysTick_Handler
-@ .extern EXTI0_IRQHandler
+.extern EXTI3_IRQHandler
 .section .isr_vector
 
 .word   0x20005000                 @  stack pointer initial value
@@ -44,7 +44,7 @@
 .word   Default_Handler + 1        @  6 EXTI0
 .word   Default_Handler + 1        @  7 EXTI1
 .word   Default_Handler + 1        @  8 EXTI2
-.word   Default_Handler + 1        @  9 EXTI3
+.word   EXTI3_IRQHandler + 1        @  9 EXTI3
 .word   Default_Handler + 1        @ 10 EXTI4
 .word   Default_Handler + 1        @ 11 DMA1_Channel1
 .word   Default_Handler + 1        @ 12 DMA1_Channel2

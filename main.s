@@ -176,7 +176,6 @@ loop:
 @ 	lsl 	r1, r1, #5
 @     str 	r1, [r3, GPIOx_ODR_OFFSET]
 
-@     @ Realizar acciones cuando el pin A0 está en estado lógico alto
 @     ldr r0, =EXTI_BASE
 @     ldr r1, [r0, #0x14]
 @     mov r2, #(1 << 0)
