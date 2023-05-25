@@ -84,6 +84,12 @@ __main:
 		sub 	sp, sp, #16
 		add		r7, sp, #0
 
+		@ Configurar SYSCFG para asociar el pin A0 con EXTI0
+		ldr 	r0, =AFIO_BASE
+		ldr 	r1, [r0, AFIO_EXTICR1_OFFSET]
+		bic		r1, r1, 0xF @ Habilitar el reloj de SYSCFG
+		str 	r1, [r0, AFIO_EXTICR1_OFFSET]
+
 		mov     r0, #1000
 		ldr 	r3, =SYSTICK_BASE
         str     r0, [r3, STK_LOAD_OFFSET]
@@ -97,12 +103,6 @@ __main:
         ldr     r2, =RCC_BASE
         mov     r3, 0x1C
         str     r3, [r2, RCC_APB2ENR_OFFSET]
-
-		@ Habilitar el reloj para SYSCFG
-		ldr r0, =RCC_BASE
-		ldr r1, [r0]
-		orr r1, r1, #(1 << 14)  // Habilitar el reloj para SYSCFG
-		str r1, [r0]
 
 		@ set pins PB5 - PB7 as digital output
         ldr     r2, =GPIOB_BASE
@@ -124,26 +124,20 @@ __main:
 		mov		r4, 0x0
 		str		r4, [r3, GPIOx_ODR_OFFSET]
 
-
-		@ Configurar SYSCFG para asociar el pin A0 con EXTI0
-		ldr 	r0, =AFIO_BASE
-		ldr 	r1, [r0, AFIO_EXTICR1_OFFSET]
-		bic		r1, r1, 0xF @ Habilitar el reloj de SYSCFG
-		str 	r1, [r0, AFIO_EXTICR1_OFFSET]
+		ldr 	r0, =EXTI_BASE
+		ldr 	r1, [r0, EXTI_RTST_OFFSET]
+		orr 	r1, r1, 0x1 @ Habilitar la detección de flanco de subida para EXTI0
+		str 	r1, [r0, EXTI_RTST_OFFSET]
 
 		ldr 	r0, =EXTI_BASE      @ Registro de máscara de interrupción de eventos
     	ldr 	r1, [r0, EXTI_IMR_OFFSET]          @ Cargar el valor actual del registro
     	orr 	r1, r1, 0x1   @ Habilitar la interrupción EXTI0
     	str 	r1, [r0, EXTI_IMR_OFFSET]
 
-		ldr 	r0, =EXTI_BASE
-		ldr 	r1, [r0, EXTI_RTST_OFFSET]
-		orr 	r1, r1, 0x1 @ Habilitar la detección de flanco de subida para EXTI0
-		str 	r1, [r0, EXTI_RTST_OFFSET]
-
 		@ Configurar y habilitar la interrupción
 		ldr 	r0, =NVIC_BASE
-		mov		r1, #6 @ Habilitar la interrupción EXTI0
+		ldr 	r1, [r0, NVIC_ISER0_OFFSET]
+		orr		r1, r1, #6 @ Habilitar la interrupción EXTI0
 		str 	r1, [r0, NVIC_ISER0_OFFSET]
 
 		@ Habilitar las interrupciones
