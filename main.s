@@ -86,6 +86,11 @@ __main:
 		sub 	sp, sp, #16
 		add		r7, sp, #0
 
+		ldr r0, =RCC_BASE
+		ldr r1, [r0]
+		orr r1, r1, #0x00000001 // Habilitar HSE (High-Speed External) como fuente de reloj
+		str r1, [r0]
+
 		mov     r0, #1000
 		ldr 	r3, =SYSTICK_BASE
         str     r0, [r3, STK_LOAD_OFFSET]
