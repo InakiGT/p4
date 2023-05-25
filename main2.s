@@ -112,7 +112,7 @@ __main:
 
         # set led status initial value
     ldr     r3, =GPIOB_BASE
-    mov		r4, 0xFFF
+    mov		r4, 0x0
     str		r4, [r3, GPIOx_ODR_OFFSET]
 
     cpsie   i
