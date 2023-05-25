@@ -137,7 +137,7 @@ __main:
 		@ Configurar y habilitar la interrupción
 		ldr 	r0, =NVIC_BASE
 		ldr 	r1, [r0, NVIC_ISER0_OFFSET]
-		orr		r1, r1, #6 @ Habilitar la interrupción EXTI0
+		orr		r1, r1, #(1<<6) @ Habilitar la interrupción EXTI0
 		str 	r1, [r0, NVIC_ISER0_OFFSET]
 
 		@ Habilitar las interrupciones
