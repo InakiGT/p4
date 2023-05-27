@@ -21,11 +21,6 @@
 .equ EXTI_IMR1_IM3, 0x00000008
 .equ SYSCFG_EXTICR1_EXTI3, 0x00000002
 
-.extern RCC
-.extern SYSCFG
-.extern EXTI
-.extern NVIC
-
 EXTI_Init:
     @ Enable SYSCFG clock
     ldr r0, =RCC_BASE

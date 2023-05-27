@@ -11,7 +11,6 @@
 	.include "exti_map.inc"
 	
 	.extern delay
-	.extern SysTick_Initialize
 
 inc_count:
     	@ Increase counter
@@ -85,15 +84,6 @@ __main:
 		sub 	sp, sp, #16
 		add		r7, sp, #0
 
-		@ Configurar SYSCFG para asociar el pin A0 con EXTI0
-		@ ldr 	r0, =AFIO_BASE
-		@ ldr 	r1, [r0, AFIO_EXTICR1_OFFSET]
-		@ bic		r1, r1, 0xF @ Habilitar el reloj de SYSCFG
-		@ str 	r1, [r0, AFIO_EXTICR1_OFFSET]
-
-		bl SysTick_Initialize
-		mov r10, #10000
-
 		@ enabling clock in port A, B and C
         ldr     r2, =RCC_BASE
         mov     r3, 0x1C
@@ -118,25 +108,6 @@ __main:
 		ldr     r3, =GPIOB_BASE
 		mov		r4, 0x0
 		str		r4, [r3, GPIOx_ODR_OFFSET]
-
-		@ ldr 	r0, =EXTI_BASE
-		@ ldr 	r1, [r0, EXTI_RTST_OFFSET]
-		@ orr 	r1, r1, 0x1 @ Habilitar la detección de flanco de subida para EXTI0
-		@ str 	r1, [r0, EXTI_RTST_OFFSET]
-
-		@ ldr 	r0, =EXTI_BASE      @ Registro de máscara de interrupción de eventos
-    	@ ldr 	r1, [r0, EXTI_IMR_OFFSET]          @ Cargar el valor actual del registro
-    	@ orr 	r1, r1, 0x1   @ Habilitar la interrupción EXTI0
-    	@ str 	r1, [r0, EXTI_IMR_OFFSET]
-
-		@ @ Configurar y habilitar la interrupción
-		@ ldr 	r0, =NVIC_BASE
-		@ ldr 	r1, [r0, NVIC_ISER0_OFFSET]
-		@ orr		r1, r1, #(1<<6) @ Habilitar la interrupción EXTI0
-		@ str 	r1, [r0, NVIC_ISER0_OFFSET]
-
-		@ @ Habilitar las interrupciones
-		@ cpsie 	i   
 
 		@ Set counter with 0
 		mov		r3, 0x0
@@ -164,21 +135,6 @@ loop:
 		mov 	r1, r0
 		lsl 	r1, r1, #5
     	str 	r1, [r3, GPIOx_ODR_OFFSET]
+		mov		r0, #500
+		bl		delay
 		b 		loop
-
-@ .section .text
-@ .global EXTI0_IRQHandler
-@ .type EXTI0_IRQHandler, %function
-@ EXTI0_IRQHandler:
-@ 	@ Turn LEDs on
-@     ldr 	r3, =GPIOB_BASE
-@ 	mov 	r1, 0xFFF
-@ 	lsl 	r1, r1, #5
-@     str 	r1, [r3, GPIOx_ODR_OFFSET]
-
-@     ldr r0, =EXTI_BASE
-@     ldr r1, [r0, #0x14]
-@     mov r2, #(1 << 0)
-@     str r2, [r0, #0x14]
-
-@     bx lr

@@ -1,50 +1,78 @@
-; Definir los registros
-.equ NVIC_ISER0, 0xE000E100  ; Registro de habilitación de interrupciones
-.equ GPIOA_BASE, 0x40010800  ; Dirección base del periférico GPIOA
-.equ GPIOA_IDR, GPIOA_BASE + 0x08  ; Registro de datos de entrada
+/* Configure the external interrupt for pin PA0. */
 
-.section .text
-.global reset_handler
-.type reset_handler, %function
+/* Habilitar el reloj del GPIOA */
+LDR R0, =0x40023830
+MOV R1, #0x00000001
+STR R1, [R0]
 
-reset_handler:
-  
-  ; Configurar y habilitar la interrupción
-  ldr r0, =NVIC_BASE
-  ldr r1, [r0]
-  orr r1, r1, #(1 << 17)  ; Habilitar la interrupción EXTI0
-  str r1, [r0, NVIC_ISER0_OFFSET]
-  
-  ; Configurar el pin A0 para generar una interrupción EXTI0
-  ldr r0, =AFIO_BASE  ; Registro de configuración de EXTI0
-  ldr r1, [r0]          ; Leer el valor actual
-  and r1, r1, #(0xFFF0) ; Limpiar los bits 0 a 3 para configurar el pin A0
-  orr r1, r1, #(0x0 << 0) ; Configurar el pin A0
-  str r1, [r0, AFIO_EXTICR1_OFFSET]          ; Escribir el valor actualizado
-  
-  ; Configurar el registro EXTI0 para detectar flancos de subida
-  ldr r0, =EXTI_BASE
-  ldr r1, [r0]
-  orr r1, r1, #(1 << 0) ; Habilitar la detección de flanco de subida para EXTI0
-  str r1, [r0, EXTI_RTST_OFFSET]
-  
-  ; Saltar a la rutina principal
-  ldr r0, =main
-  bx r0
+/* Set the EXTI0 line to be edge-triggered and active low. */
+LDR R0, =0x40013C00
+MOV R1, #0x00000003
+STR R1, [R0]
 
-; Rutina de interrupción EXTI0
-.section .text
-.global EXTI0_IRQHandler
-.type EXTI0_IRQHandler, %function
+/* Configure the IVT to use EXTI0. */
 
+/* Write the vector table entry for EXTI0. */
+LDR R0, =0x2001C000
+LDR R1, =EXTI0_IRQHandler
+STR R1, [R0, #0x08]
+
+/* Enable the EXTI0 interrupt in the NVIC. */
+LDR R0, =0xE000E100
+MOV R1, #0x00000001
+STR R1, [R0]
+
+/*
+ * Set all the PB pins to be outputs.
+ */
+
+/* Habilitar el reloj del GPIOB */
+LDR R0, =0x40023834
+MOV R1, #0x00000001
+STR R1, [R0]
+
+/* Set the GPIOB pins as outputs. */
+LDR R0, =0x48000400
+MOV R1, #0x0000FFFF
+STR R1, [R0]
+
+/* Set all the PB pins to low. */
+LDR R0, =0x48000414
+MOV R1, #0x00000000
+STR R1, [R0]
+
+/*
+ * The interrupt handler function.
+ */
 EXTI0_IRQHandler:
-  ; Guardar los registros necesarios
-  push {lr}
-  
-  ; Leer el estado del pin A0
-  ldr r0, =GPIOA_IDR
-  ldr r1, [r0]
-  and r1, r1, #(1 << 0)  ; Máscara para leer solo el bit 0
-  
-  ; Hacer algo en función del estado del pin A0
-  cmp r1
+
+/* Clear the interrupt flag. */
+LDR R0, =0x40013C0C
+MOV R1, #0x00000001
+STR R1, [R0]
+
+/* Check if the interrupt was caused by a falling edge. */
+LDR R0, =0x40013C08
+LDR R1, [R0]
+AND R1, R1, #0x00000001
+CMP R1, #0x00000001
+
+/* If the interrupt was caused by a falling edge, turn all the PB pins on. */
+BEQ turn_on_all_pb
+
+/* Turn only PB9 on. */
+LDR R0, =0x48000414
+LDR R1, =0x00000200
+STR R1, [R0]
+
+/* Return from the interrupt handler. */
+BX LR
+
+/* Turn all the PB pins on. */
+turn_on_all_pb:
+LDR R0, =0x48000414
+LDR R1, =0x0000FFFF
+STR R1, [R0]
+
+/* Return from the interrupt handler. */
+BX LR
