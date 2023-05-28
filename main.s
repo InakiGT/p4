@@ -196,6 +196,31 @@ __main:
 		mov		r4, 0x0
 		str		r4, [r3, GPIOx_ODR_OFFSET]
 
+		/* SystemClock Config */
+
+		/* NVIC_EnableIRQ (6) */
+		ldr 	r3, =NVIC_BASE
+		ldr 	r3, [r3, NVIC_ISER0_OFFSET]
+		mov		r2, #6
+		lsr 	r2, r2, #5
+		ldr 	r4, =0x1F
+		ands	r2, r2, r4
+		mov		r4, #1
+		lsl		r4, r4, r2
+		str 	r4, r3
+
+		/* NVIC_EnableIRQ (6) */
+		ldr 	r3, =NVIC_BASE
+		ldr 	r3, [r3, NVIC_ISER0_OFFSET]
+		mov		r2, #10
+		lsr 	r2, r2, #5
+		ldr 	r4, =0x1F
+		ands	r2, r2, r4
+		mov		r4, #1
+		lsl		r4, r4, r2
+		str 	r4, r3
+
+
 		# Set counter with 0
 		mov		r3, 0x0
 		str		r3, [r7, #4]
