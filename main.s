@@ -6,6 +6,7 @@
 	.include "gpio_map.inc"
 	.include "rcc_map.inc"
 	.include "nvic_reg_map.inc"
+	.include "afio_map.inc"
 	
 	.extern delay
 
@@ -197,15 +198,13 @@ __main:
 		mov		r4, 0x0
 		str		r4, [r3, GPIOx_ODR_OFFSET]
 
-		/* SystemClock Config */
-		LDR R0, =RCC_BASE     @ Dirección base del registro RCC
-		LDR R1, [R0, #RCC_CIR_OFFSET]   @ Cargar el valor actual del registro RCC_CIR
-
-		@ Configurar los bits correspondientes del registro RCC_CIR según sea necesario
-		LDR R1, =0x2   @ Habilitar la interrupción de lista de reloj HSI
-
-		@ Almacenar el nuevo valor en el registro RCC_CIR
-		STR R1, [R0, #RCC_CIR_OFFSET]
+		@ Cargar la dirección del registro AFIO_EXTICR1 en el registro r0
+   // Configurar AFIO_EXTICR1 para mapear PA0 a EXTI0
+		LDR	 	R0, =AFIO_BASE
+		LDR 	R1, [R0, AFIO_EXTICR1_OFFSET]
+		BIC 	R1, R1, #(0xF << 0)  // Limpiar los bits de EXTI0
+		ORR 	R1, R1, #(0x0 << 0)  // Configurar EXTI0 para PA0
+		STR 	R1, [R0, AFIO_EXTICR1_OFFSET]
 
 		/* NVIC_EnableIRQ (6) */
 		ldr 	r3, =NVIC_BASE
