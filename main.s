@@ -202,10 +202,7 @@ __main:
 		LDR R1, [R0, #RCC_CIR_OFFSET]   @ Cargar el valor actual del registro RCC_CIR
 
 		@ Configurar los bits correspondientes del registro RCC_CIR según sea necesario
-		ORR R1, R1, #8    @ Habilitar la interrupción de lista de reloj LSI
-		ORR R1, R1, #4    @ Habilitar la interrupción de estabilidad de reloj LSE
-		ORR R1, R1, #2   @ Habilitar la interrupción de lista de reloj HSI
-		ORR R1, R1, #1   @ Habilitar la interrupción de lista de reloj HSE
+		LDR R1, =0x2   @ Habilitar la interrupción de lista de reloj HSI
 
 		@ Almacenar el nuevo valor en el registro RCC_CIR
 		STR R1, [R0, #RCC_CIR_OFFSET]
