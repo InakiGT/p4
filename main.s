@@ -207,7 +207,7 @@ __main:
 		ands	r2, r2, r4
 		mov		r4, #1
 		lsl		r4, r4, r2
-		str 	r4, r3
+		str 	r4, [r3]
 
 		/* NVIC_EnableIRQ (6) */
 		ldr 	r3, =NVIC_BASE
@@ -218,7 +218,7 @@ __main:
 		ands	r2, r2, r4
 		mov		r4, #1
 		lsl		r4, r4, r2
-		str 	r4, r3
+		str 	r4, [r3]
 
 
 		# Set counter with 0
