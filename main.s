@@ -202,22 +202,24 @@ __main:
 		/* NVIC_EnableIRQ (6) */
 		ldr 	r3, =NVIC_BASE
 		mov		r2, #6
-		lsr 	r2, r2, #5
-		ldr 	r4, =0x1F
-		ands	r2, r2, r4
+		ands	r2, r2, #31
+		mov		r1, #6
+		lsr 	r1, r1, #5
 		mov		r4, #1
-		lsl		r4, r4, r2
-		str 	r4, [r3, NVIC_ISER0_OFFSET]
+		lsl		r2, r4, r2
+		add		r3, r3, #NVIC_ISER0_OFFSET
+		str 	r2, [r3, r2, lsl #2]
 
-		/* NVIC_EnableIRQ (6) */
+		/* NVIC_EnableIRQ (10) */
 		ldr 	r3, =NVIC_BASE
 		mov		r2, #10
-		lsr 	r2, r2, #5
-		ldr 	r4, =0x1F
-		ands	r2, r2, r4
+		ands	r2, r2, #31
+		mov		r1, #6
+		lsr 	r1, r1, #5
 		mov		r4, #1
-		lsl		r4, r4, r2
-		str 	r4, [r3, NVIC_ISER0_OFFSET]
+		lsl		r2, r4, r2
+		add		r3, r3, #NVIC_ISER0_OFFSET
+		str 	r2, [r3, r2, lsl #2]
 
 
 		# Set counter with 0
