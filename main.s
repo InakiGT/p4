@@ -242,13 +242,13 @@ __main:
 		str		r3, [r7, #8]
 loop:
 		@ Check if A0 is pressed, if it is then change status
-		mov 	r0, 0x1
-		bl		is_button_pressed
-    	cmp 	r0, 0x1
-    	bne 	.L6
-		ldr 	r3, [r7, #8]
-		eor		r3, r3, 0x1
-		str 	r3, [r7, #8]
+		@ mov 	r0, 0x1
+		@ bl		is_button_pressed
+    	@ cmp 	r0, 0x1
+    	@ bne 	.L6
+		@ ldr 	r3, [r7, #8]
+		@ eor		r3, r3, 0x1
+		@ str 	r3, [r7, #8]
 
 .L6:		
 		@ Check if A4 is pressed, if it is then changes speed
