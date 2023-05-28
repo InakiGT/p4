@@ -198,6 +198,18 @@ __main:
 		str		r4, [r3, GPIOx_ODR_OFFSET]
 
 		/* SystemClock Config */
+		LDR R0, =RCC_BASE     ; Dirección base del registro RCC
+		LDR R1, [R0, #RCC_CIR_OFFSET]   ; Cargar el valor actual del registro RCC_CIR
+
+		; Configurar los bits correspondientes del registro RCC_CIR según sea necesario
+		ORR R1, R1, #0    ; Habilitar la interrupción de lista de reloj LSI
+		ORR R1, R1, #1    ; Habilitar la interrupción de estabilidad de reloj LSE
+		ORR R1, R1, #2    ; Habilitar la interrupción de lista de reloj HSI
+		ORR R1, R1, #3    ; Habilitar la interrupción de lista de reloj HSE
+		ORR R1, R1, #4    ; Habilitar la interrupción de estabilidad de PLL
+
+		; Almacenar el nuevo valor en el registro RCC_CIR
+		STR R1, [R0, #RCC_CIR_OFFSET]
 
 		/* NVIC_EnableIRQ (6) */
 		ldr 	r3, =NVIC_BASE
