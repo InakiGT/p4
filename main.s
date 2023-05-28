@@ -272,3 +272,9 @@ loop:
 		lsl 	r1, r1, #5
     	str 	r1, [r3, GPIOx_ODR_OFFSET]
 		b 		loop
+
+.global EXTI0_Handler
+EXTI0_Handler:
+	    ldr 	r3, =GPIOB_BASE
+		mov 	r1, 0x0
+    	str 	r1, [r3, GPIOx_ODR_OFFSET]

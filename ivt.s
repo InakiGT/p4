@@ -15,6 +15,7 @@
 
 .extern Reset_Handler
 .extern Default_Handler
+.extern EXTI0_Handler
 .section .isr_vector
 
 .word   0x20005000                 @  stack pointer initial value
@@ -39,7 +40,7 @@
 .word   Default_Handler + 1        @  3 RTC
 .word   Default_Handler + 1        @  4 FLASH
 .word   Default_Handler + 1        @  5 RCC
-.word   Default_Handler + 1        @  6 EXTI0
+.word   EXTI0_Handler + 1        @  6 EXTI0
 .word   Default_Handler + 1        @  7 EXTI1
 .word   Default_Handler + 1        @  8 EXTI2
 .word   Default_Handler + 1        @  9 EXTI3
