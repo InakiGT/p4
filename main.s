@@ -5,6 +5,7 @@
 	.include "ivt.s"
 	.include "gpio_map.inc"
 	.include "rcc_map.inc"
+	.include "nvic_reg_map.inc"
 	
 	.extern delay
 
