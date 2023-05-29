@@ -53,7 +53,7 @@ cheek_speed:
 		add		r7, sp, #0
 		cmp 	r8, #4
 		bgt		.CH1
-		lsr		r8, r8, #1
+		lsr		r11, r11, #1
 		adds	r7, r7, #4
 		mov		sp, r7
 		pop		{r7}
