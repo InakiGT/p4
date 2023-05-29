@@ -11,6 +11,7 @@
 	.include "exti_map.inc"
 	
 	.extern delay
+	.extern SysTick_Initialize
 
 inc_count:
     	@ Increase counter
@@ -44,11 +45,7 @@ dec_count:
 		ldr		r0, [r7, #4]
     	subs 	r0, r0, #1
 		str		r0, [r7, #4]
-    	cmp 	r0, #0
-		bge		.L10
-    	bl 		reset_count   @ Jumps to "reset_count" if counter value is less than 0
-		str		r0, [r7, #4]
-.L10:
+    	
 		ldr		r0, [r7, #4]
 		adds	r7, r7, #8
 		mov		sp, r7
@@ -74,6 +71,51 @@ reset_count:
 		pop		{lr}
 		bx		lr
 
+cheek_speed:
+		push 	{r7}
+		sub 	sp, sp, #4
+		add		r7, sp, #0
+
+		cmp		r8, #1
+		bne		.CH1
+		mov		r11, #1000
+		adds	r7, r7, #4
+		mov		sp, r7
+		pop		{r7}
+		bx 		lr
+.CH1:	
+		cmp		r8, #2
+		bne		.CH2
+		mov		r11, #500
+		adds	r7, r7, #4
+		mov		sp, r7
+		pop		{r7}
+		bx 		lr
+.CH2:	
+		cmp		r8, #3
+		bne		.CH3
+		mov		r11, #250
+		adds	r7, r7, #4
+		mov		sp, r7
+		pop		{r7}
+		bx 		lr
+.CH3:	
+		cmp		r8, #4
+		bne		.CH4
+		mov		r11, #125
+		adds	r7, r7, #4
+		mov		sp, r7
+		pop		{r7}
+		bx 		lr
+.CH4:	
+		mov		r8, #1
+		mov		r11, #1000
+
+		adds	r7, r7, #4
+		mov		sp, r7
+		pop		{r7}
+		bx 		lr
+
 	.section .text
  	.align  1
  	.syntax unified
@@ -83,6 +125,8 @@ __main:
 		push 	{r7, lr}
 		sub 	sp, sp, #16
 		add		r7, sp, #0
+
+		bl 		SysTick_Initialize
 
 		@ enabling clock in port A, B and C
         ldr     r2, =RCC_BASE
@@ -104,6 +148,22 @@ __main:
         ldr     r3, =0x44484448
         str     r3, [r2, GPIOx_CRL_OFFSET]
 
+		ldr 	r0, =AFIO_BASE
+		mov		r1, #0
+		ldr 	r1, [r0, AFIO_EXTICR1_OFFSET]
+
+		ldr 	r0, =EXTI_BASE
+		mov		r1, #0
+		str 	r1, [r0, EXTI_FTST_OFFSET]
+		ldr 	r1, =0x11
+		str		r1, [r0, EXTI_RTST_OFFSET]
+
+		str 	r1, [r0, EXTI_IMR_OFFSET]
+
+		ldr 	r0, =NVIC_BASE
+		ldr 	r1, =0x440
+		str		r1, [r0, NVIC_ISER0_OFFSET]
+
         # set led status initial value
 		ldr     r3, =GPIOB_BASE
 		mov		r4, 0x0
@@ -114,11 +174,16 @@ __main:
 		str		r3, [r7, #4]
 
 		@ Set counter status as increment
-		mov		r9, 0x1
+		mov		r9, 0x0
+
+		@ Set delay with 1000
+		mov		r11, #1000
+
+		mov		r8, #1
 loop:
 		@ Check if counter status is 1 or 0
-		ldr 	r3, [r7, #8]
-		cmp 	r3, 0x1
+		bl		cheek_speed
+		cmp 	r9, 0x1
 		bne 	.L8
 		ldr 	r0, [r7, #4]
 		bl		inc_count
@@ -135,6 +200,6 @@ loop:
 		mov 	r1, r0
 		lsl 	r1, r1, #5
     	str 	r1, [r3, GPIOx_ODR_OFFSET]
-		mov		r0, #500
+		mov		r0, r11
 		bl		delay
 		b 		loop

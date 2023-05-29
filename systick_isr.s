@@ -9,28 +9,30 @@
 .thumb
 .global SysTick_Initialize
 SysTick_Initialize:
-    ldr     r0, =SYSTICK_BASE
-    mov     r1, #0
-    str     r1, [r0, STK_CTRL_OFFSET]
-    mov     r2, #262
-    str     r2, [r0, STK_LOAD_OFFSET] 
-    mov     r1, #0
-    str     r1, [r0, STK_VAL_OFFSET] 
-    ldr     r2, =SCB_BASE
-    ldr     r3, =SCB_SHPR1_OFFSET
-    add     r2, r2, r3
-    mov     r3, #(1<<4)
-    strb    r3, [r2, #11]
-    ldr     r1 , [r0, STK_CTRL_OFFSET]
-    orr     r1, r1, #3 
-    str     r1, [r0, STK_CTRL_OFFSET]
-    bx      lr 
+    ldr r0 , =SYSTICK_BASE
+    mov r1, #0
+    str r1, [r0, #STK_CTRL_OFFSET]
+
+    ldr r2, =7999 @ No es 262
+    str r2, [r0, #STK_LOAD_OFFSET] 
+
+    mov r1, #0
+    str r1, [r0, #STK_VAL_OFFSET]
+
+    ldr r2 , =SCB_BASE
+    add r2 , r2 , #SCB_SHPR3_OFFSET
+    mov     r3, #0x20
+    strb r3, [r2, #11]
+
+    ldr r1, [ r0 , #STK_CTRL_OFFSET]
+    orr r1, r1, #7
+    str r1, [r0, #STK_CTRL_OFFSET]
+    bx lr
 
 
 .global SysTick_Handler
 SysTick_Handler:
-    mov     r0, #1
-    bl      delay
-    bx      lr 
+    sub     r10, r10, #1
+    bx      lr
 
 .size   SysTick_Handler, .-SysTick_Handler
