@@ -16,8 +16,13 @@ EXTI0_Handler:
 
 .global EXTI4_Handler
 EXTI4_Handler:
-    mov     r3, #1
-    eors    r9, r9, r3
+    cmp     r9, #1
+    beq     .L0
+    mov     r9, #1
+    b       .L1
+.L0
+    mov     r9, #0
+.L1:
     ldr     r0, =EXTI_BASE
     ldr     r1, [r0, EXTI_PR_OFFSET]
     orr     r1, r1, 0x400
