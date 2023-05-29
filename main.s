@@ -174,7 +174,7 @@ __main:
 		str		r3, [r7, #4]
 
 		@ Set counter status as increment
-		mov		r9, 0x0
+		mov		r9, 0x1
 
 		@ Set delay with 1000
 		mov		r11, #1000
