@@ -29,7 +29,7 @@ EXTI4_Handler:
     beq     .L0
     mov     r9, #1
     b       .L1
-.L0
+.L0:
     mov     r9, #0
 .L1:
     ldr     r0, =EXTI_BASE
