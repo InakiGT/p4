@@ -51,16 +51,42 @@ cheek_speed:
 		push 	{r7}
 		sub 	sp, sp, #4
 		add		r7, sp, #0
-		cmp 	r8, #4
-		bgt		.CH1
-		lsr		r11, r11, #1
+
+		cmp		r8, #1
+		bne		.CH1
+		mov		r11, #1000
 		adds	r7, r7, #4
 		mov		sp, r7
 		pop		{r7}
 		bx 		lr
 .CH1:	
+		cmp		r8, #2
+		bne		.CH2
+		mov		r11, #500
+		adds	r7, r7, #4
+		mov		sp, r7
+		pop		{r7}
+		bx 		lr
+.CH2:	
+		cmp		r8, #3
+		bne		.CH3
+		mov		r11, #250
+		adds	r7, r7, #4
+		mov		sp, r7
+		pop		{r7}
+		bx 		lr
+.CH3:	
+		cmp		r8, #4
+		bne		.CH4
+		mov		r11, #125
+		adds	r7, r7, #4
+		mov		sp, r7
+		pop		{r7}
+		bx 		lr
+.CH4:	
 		mov		r8, #1
 		mov		r11, #1000
+
 		adds	r7, r7, #4
 		mov		sp, r7
 		pop		{r7}
