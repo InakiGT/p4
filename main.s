@@ -22,12 +22,6 @@ inc_count:
 		ldr		r0, [r7, #4]
     	adds	r0, r0, #1
 		str		r0, [r7, #4]
-		ldr		r3, =0x3FF
-    	cmp 	r0, r3
-    	ble 	.L9   @ Jumps to "reset_count" if counter value is grather than 1023
-		bl		reset_count
-		str		r0, [r7, #4]
-.L9:
 		ldr		r0, [r7, #4]
 		adds	r7, r7, #8
 		mov		sp, r7
@@ -45,7 +39,6 @@ dec_count:
 		ldr		r0, [r7, #4]
     	subs 	r0, r0, #1
 		str		r0, [r7, #4]
-    	
 		ldr		r0, [r7, #4]
 		adds	r7, r7, #8
 		mov		sp, r7
@@ -54,67 +47,25 @@ dec_count:
 		bx		lr
 
 
-reset_count:
-		@ Turn LEDs off
-		push 	{r7, lr}
-		sub 	sp, sp, #8
-		add		r7, sp, #0
-		ldr 	r3, =GPIOB_BASE
-		mov 	r1, 0x0
-		str 	r1, [r3, GPIOx_ODR_OFFSET]
-		str		r1, [r7, #4]
-		ldr		r3, [r7, #4]
-		mov 	r0, r3
-		adds	r7, r7, #8
-		mov		sp, r7
-		pop 	{r7}
-		pop		{lr}
-		bx		lr
-
 cheek_speed:
 		push 	{r7}
 		sub 	sp, sp, #4
 		add		r7, sp, #0
-
-		cmp		r8, #1
-		bne		.CH1
-		mov		r11, #1000
+		cmp 	r8, #4
+		bgt		.CH1
+		lsr		r8, r8, #1
 		adds	r7, r7, #4
 		mov		sp, r7
 		pop		{r7}
 		bx 		lr
 .CH1:	
-		cmp		r8, #2
-		bne		.CH2
-		mov		r11, #500
-		adds	r7, r7, #4
-		mov		sp, r7
-		pop		{r7}
-		bx 		lr
-.CH2:	
-		cmp		r8, #3
-		bne		.CH3
-		mov		r11, #250
-		adds	r7, r7, #4
-		mov		sp, r7
-		pop		{r7}
-		bx 		lr
-.CH3:	
-		cmp		r8, #4
-		bne		.CH4
-		mov		r11, #125
-		adds	r7, r7, #4
-		mov		sp, r7
-		pop		{r7}
-		bx 		lr
-.CH4:	
 		mov		r8, #1
 		mov		r11, #1000
-
 		adds	r7, r7, #4
 		mov		sp, r7
 		pop		{r7}
 		bx 		lr
+
 
 	.section .text
  	.align  1
