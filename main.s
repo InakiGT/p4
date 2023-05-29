@@ -174,7 +174,7 @@ __main:
 		str		r3, [r7, #4]
 
 		@ Set counter status as increment
-		mov		r9, 0x1
+		mov		r9, #1
 
 		@ Set delay with 1000
 		mov		r11, #1000
@@ -183,7 +183,7 @@ __main:
 loop:
 		@ Check if counter status is 1 or 0
 		bl		cheek_speed
-		cmp 	r9, 0x1
+		cmp 	r9, #1
 		bne 	.L8
 		ldr 	r0, [r7, #4]
 		bl		inc_count
