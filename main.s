@@ -47,7 +47,7 @@ dec_count:
 		bx		lr
 
 
-cheek_speed:
+check_speed:
 		push 	{r7}
 		sub 	sp, sp, #4
 		add		r7, sp, #0
@@ -159,7 +159,7 @@ __main:
 		mov		r8, #1
 loop:
 		@ Check if counter status is 1 or 0
-		bl		cheek_speed
+		bl		check_speed
 		cmp 	r9, #1
 		bne 	.L8
 		ldr 	r0, [r7, #4]
