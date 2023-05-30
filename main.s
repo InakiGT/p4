@@ -14,7 +14,6 @@
 	.extern SysTick_Initialize
 
 inc_count:
-    	@ Increase counter
 		push 	{r7, lr}
 		sub 	sp, sp, #8
 		add		r7, sp, #0
@@ -31,7 +30,6 @@ inc_count:
 
 
 dec_count:
-	   	@ Decrease counter
 		push 	{r7, lr}
 		sub 	sp, sp, #8
 		add		r7, sp, #0
@@ -54,7 +52,7 @@ check_speed:
 
 		cmp		r8, #1
 		bne		.CH1
-		mov		r11, #1000
+		mov		r0, #1000
 		adds	r7, r7, #4
 		mov		sp, r7
 		pop		{r7}
@@ -62,7 +60,7 @@ check_speed:
 .CH1:	
 		cmp		r8, #2
 		bne		.CH2
-		mov		r11, #500
+		mov		r0, #500
 		adds	r7, r7, #4
 		mov		sp, r7
 		pop		{r7}
@@ -70,7 +68,7 @@ check_speed:
 .CH2:	
 		cmp		r8, #3
 		bne		.CH3
-		mov		r11, #250
+		mov		r0, #250
 		adds	r7, r7, #4
 		mov		sp, r7
 		pop		{r7}
@@ -78,14 +76,14 @@ check_speed:
 .CH3:	
 		cmp		r8, #4
 		bne		.CH4
-		mov		r11, #125
+		mov		r0, #125
 		adds	r7, r7, #4
 		mov		sp, r7
 		pop		{r7}
 		bx 		lr
 .CH4:	
 		mov		r8, #1
-		mov		r11, #1000
+		mov		r0, #1000
 
 		adds	r7, r7, #4
 		mov		sp, r7
@@ -150,16 +148,20 @@ __main:
 		mov		r3, 0x0
 		str		r3, [r7, #4]
 
+		@ Set delay with 1000
+		mov		r3, #1000
+		str 	r3, [r7, #8]
+
 		@ Set counter status as increment
 		mov		r9, #1
 
-		@ Set delay with 1000
-		mov		r11, #1000
 
 		mov		r8, #1
 loop:
 		@ Check if counter status is 1 or 0
 		bl		check_speed
+		str 	r0, [r7, #8]
+
 		cmp 	r9, #1
 		bne 	.L8
 		ldr 	r0, [r7, #4]
@@ -177,6 +179,6 @@ loop:
 		mov 	r1, r0
 		lsl 	r1, r1, #5
     	str 	r1, [r3, GPIOx_ODR_OFFSET]
-		mov		r0, r11
+		ldr		r0, [r7, #8]
 		bl		delay
 		b 		loop
