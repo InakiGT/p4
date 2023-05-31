@@ -127,10 +127,10 @@ __main:
 		ldr 	r1, [r0, AFIO_EXTICR1_OFFSET]
 
 		ldr 	r0, =EXTI_BASE
-		ldr 	r1, =0x11
-		str 	r1, [r0, EXTI_FTST_OFFSET]
 		mov		r1, #0
 		str		r1, [r0, EXTI_RTST_OFFSET]
+		ldr 	r1, =0x11
+		str 	r1, [r0, EXTI_FTST_OFFSET]
 
 		str 	r1, [r0, EXTI_IMR_OFFSET]
 
