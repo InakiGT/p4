@@ -12,7 +12,6 @@
 	
 	.extern delay
 	.extern SysTick_Initialize
-
 inc_count:
 		push 	{r7, lr}
 		sub 	sp, sp, #8
@@ -128,9 +127,9 @@ __main:
 		ldr 	r1, [r0, AFIO_EXTICR1_OFFSET]
 
 		ldr 	r0, =EXTI_BASE
-		mov		r1, #0
-		str 	r1, [r0, EXTI_FTST_OFFSET]
 		ldr 	r1, =0x11
+		str 	r1, [r0, EXTI_FTST_OFFSET]
+		mov		r1, #0
 		str		r1, [r0, EXTI_RTST_OFFSET]
 
 		str 	r1, [r0, EXTI_IMR_OFFSET]
@@ -152,28 +151,27 @@ __main:
 		mov		r3, #1000
 		str 	r3, [r7, #8]
 
-		@ Set counter status as increment
+		@ Set counter initial status as increment
 		mov		r9, #1
 
 
 		mov		r8, #1
 loop:
-		@ Check if counter status is 1 or 0
+		@ Check if counter status is 1 or not
 		bl		check_speed
 		str 	r0, [r7, #8]
 
 		cmp 	r9, #1
-		bne 	.L8
+		bne 	.L0
 		ldr 	r0, [r7, #4]
 		bl		inc_count
 		str		r0, [r7, #4]
-		b 		.L11
-.L8:
+		b 		.L1
+.L0:
 		ldr 	r0, [r7, #4]
 		bl		dec_count
 		str		r0, [r7, #4]
-.L11:
-		@ Turn LEDs on
+.L1:
     	ldr 	r3, =GPIOB_BASE
 		ldr		r0, [r7, #4]
 		mov 	r1, r0

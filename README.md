@@ -14,7 +14,6 @@ Para realizar la grabación del binario en el microcontrolador debemos ejecutar 
 
 Donde 'prog.bin' es el nombre del binario generado
 
-## Diagrama de Hardware
 
 # Configuración de GPIO
 ## Compilación del proyecto
@@ -32,7 +31,4 @@ Donde 'prog.bin' es el nombre del binario generado
 
 ## Diagrama de Hardware
 
-![img](https://i.ibb.co/K7K4p12/Diagrama-en-blanco.png)
-
-## Marco de las funciones
-![img](https://i.ibb.co/FzjSnT9/Captura-de-pantalla-2023-05-17-a-la-s-14-32-40.png)
+![img](https://i.ibb.co/2MvHhdV/P4-Ejemplo-de-diagrama-esquem-tico.png[/img][/url])
