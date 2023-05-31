@@ -81,7 +81,7 @@ check_speed:
 		pop		{r7}
 		bx 		lr
 .CH4:	
-		mov		r8, #1
+		mov		r4, #1
 		mov		r0, #1000
 
 		adds	r7, r7, #4
@@ -128,9 +128,9 @@ __main:
 
 		ldr 	r0, =EXTI_BASE
 		mov		r1, #0
-		str		r1, [r0, EXTI_RTST_OFFSET]
-		ldr 	r1, =0x11
 		str 	r1, [r0, EXTI_FTST_OFFSET]
+		ldr 	r1, =0x11
+		str		r1, [r0, EXTI_RTST_OFFSET]
 
 		str 	r1, [r0, EXTI_IMR_OFFSET]
 
@@ -152,7 +152,7 @@ __main:
 		str 	r3, [r7, #8]
 
 		@ Set counter initial status as increment
-		mov		r9, #1
+		mov		r5, #1
 
 
 		mov		r8, #1
@@ -161,7 +161,7 @@ loop:
 		bl		check_speed
 		str 	r0, [r7, #8]
 
-		cmp 	r9, #1
+		cmp 	r5, #1
 		bne 	.L0
 		ldr 	r0, [r7, #4]
 		bl		inc_count
@@ -174,7 +174,7 @@ loop:
 .L1:
     	ldr 	r3, =GPIOB_BASE
 		ldr		r0, [r7, #4]
-		mov 	r1, r0
+		mov 	r1, r8 @ Check this 
 		lsl 	r1, r1, #5
     	str 	r1, [r3, GPIOx_ODR_OFFSET]
 		ldr		r0, [r7, #8]
