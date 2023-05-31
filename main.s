@@ -81,7 +81,7 @@ check_speed:
 		pop		{r7}
 		bx 		lr
 .CH4:	
-		mov		r4, #1
+		mov		r8, #1
 		mov		r0, #1000
 
 		adds	r7, r7, #4
