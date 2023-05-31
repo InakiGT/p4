@@ -9,7 +9,7 @@
 .thumb
 .global EXTI0_Handler
 EXTI0_Handler:
-    add     r8, r8, #1
+    adds    r8, r8, #1
     ldr     r0, =EXTI_BASE
     ldr     r1, [r0, EXTI_PR_OFFSET]
     orr     r1, r1, 0x40

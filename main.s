@@ -153,9 +153,8 @@ __main:
 
 		@ Set counter initial status as increment
 		mov		r5, #1
-
-
 		mov		r8, #1
+		
 loop:
 		@ Check if counter status is 1 or not
 		bl		check_speed
