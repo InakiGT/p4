@@ -9,11 +9,17 @@
 .thumb
 .global EXTI0_Handler
 EXTI0_Handler:
+    ldr     r0, =EXTI_BASE
+    ldr     r1, [r0, EXTI_PR_OFFSET]
+    and     r1, r1, 0x40
+    cmp     r1, 0x40
+    bne     .L0
     add     r8, r8, #1
     ldr     r0, =EXTI_BASE
     ldr     r1, [r0, EXTI_PR_OFFSET]
     orr     r1, r1, 0x40
     str     r1, [r0, EXTI_PR_OFFSET]
+.L0:
     bx      lr
 
 .global EXTI4_Handler
