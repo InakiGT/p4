@@ -25,4 +25,4 @@ Donde 'prog.bin' es el nombre del binario generado
 
 ## Diagrama de Hardware
 
-![img](https://i.ibb.co/2MvHhdV/P4-Ejemplo-de-diagrama-esquem-tico.png[/img][/url])
+![img](https://i.ibb.co/Vq9d1Gj/P4-Ejemplo-de-diagrama-esquem-tico-2.png[/img][/url])
