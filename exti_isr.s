@@ -10,7 +10,7 @@
 .thumb
 .global EXTI0_Handler
 EXTI0_Handler:
-    ldr     r1, =GPIOB_BASE
+    ldr     r1, =GPIOA_BASE
     ldr     r1, [r1, GPIOx_IDR_OFFSET]
     and     r1, r1, 0x1
     cmp     r1, 0x1
@@ -25,7 +25,7 @@ EXTI0_Handler:
 
 .global EXTI4_Handler
 EXTI4_Handler:
-    ldr     r1, =GPIOB_BASE
+    ldr     r1, =GPIOA_BASE
     ldr     r1, [r1, GPIOx_IDR_OFFSET]
     and     r1, r1, 0x10
     cmp     r1, 0x10
