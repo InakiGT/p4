@@ -173,7 +173,7 @@ loop:
 .L1:
     	ldr 	r3, =GPIOB_BASE
 		ldr		r0, [r7, #4]
-		mov 	r1, r8 @ Check this 
+		mov 	r1, r0
 		lsl 	r1, r1, #5
     	str 	r1, [r3, GPIOx_ODR_OFFSET]
 		ldr		r0, [r7, #8]
