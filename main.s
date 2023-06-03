@@ -128,9 +128,9 @@ __main:
 
 		ldr 	r0, =EXTI_BASE
 		mov		r1, #0
-		str		r1, [r0, EXTI_RTST_OFFSET]
-		ldr 	r1, =0x11
 		str 	r1, [r0, EXTI_FTST_OFFSET]
+		ldr 	r1, =0x11
+		str		r1, [r0, EXTI_RTST_OFFSET]
 
 		str 	r1, [r0, EXTI_IMR_OFFSET]
 
