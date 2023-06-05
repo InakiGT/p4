@@ -124,7 +124,7 @@ __main:
 
 		ldr 	r0, =AFIO_BASE
 		mov		r1, #0
-		ldr 	r1, [r0, AFIO_EXTICR1_OFFSET]
+		str 	r1, [r0, AFIO_EXTICR1_OFFSET]
 
 		ldr 	r0, =EXTI_BASE
 		mov		r1, #0
