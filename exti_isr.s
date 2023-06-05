@@ -23,6 +23,6 @@ EXTI4_Handler:
     and     r5, r5, #1
     ldr     r0, =EXTI_BASE
     ldr     r1, [r0, EXTI_PR_OFFSET]
-    orr     r1, r1, 0x5
+    orr     r1, r1, 0x10
     str     r1, [r0, EXTI_PR_OFFSET]
     bx      lr
