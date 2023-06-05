@@ -12,37 +12,6 @@
 	
 	.extern delay
 	.extern SysTick_Initialize
-inc_count:
-		push 	{r7, lr}
-		sub 	sp, sp, #8
-		add		r7, sp, #0
-		str		r0, [r7, #4]
-		ldr		r0, [r7, #4]
-    	adds	r0, r0, #1
-		str		r0, [r7, #4]
-		ldr		r0, [r7, #4]
-		adds	r7, r7, #8
-		mov		sp, r7
-		pop 	{r7}
-		pop		{lr}
-		bx		lr
-
-
-dec_count:
-		push 	{r7, lr}
-		sub 	sp, sp, #8
-		add		r7, sp, #0
-		str		r0, [r7, #4]
-		ldr		r0, [r7, #4]
-    	subs 	r0, r0, #1
-		str		r0, [r7, #4]
-		ldr		r0, [r7, #4]
-		adds	r7, r7, #8
-		mov		sp, r7
-		pop 	{r7}
-		pop		{lr}
-		bx		lr
-
 
 check_speed:
 		push 	{r7}
@@ -167,12 +136,12 @@ loop:
 		cmp 	r5, #1
 		bne 	.L0
 		ldr 	r0, [r7, #4]
-		bl		inc_count
+		add		r0, r0, #1
 		str		r0, [r7, #4]
 		b 		.L1
 .L0:
 		ldr 	r0, [r7, #4]
-		bl		dec_count
+		sub		r0, r0, #1
 		str		r0, [r7, #4]
 .L1:
     	ldr 	r3, =GPIOB_BASE
