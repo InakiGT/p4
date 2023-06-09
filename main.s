@@ -2,7 +2,6 @@
 	.cpu cortex-m3      @ Generates Cortex-M3 instructions
 	.syntax unified
 
-	.include "ivt.s"
 	.include "gpio_map.inc"
 	.include "rcc_map.inc"
 	.include "systick_map.inc"
@@ -88,27 +87,22 @@ __main:
 
         @ set pins PA0 and PA4 as digital input
         ldr     r2, =GPIOA_BASE
-        ldr     r3, =0x44484448
+        ldr     r3, =0x48884448
         str     r3, [r2, GPIOx_CRL_OFFSET]
 
 		ldr 	r0, =AFIO_BASE
-		mov		r1, #0
-		str 	r1, [r0, AFIO_EXTICR1_OFFSET]
-
-		ldr 	r0, =AFIO_BASE
-		mov		r1, #0
+		eor		r1, r1
 		str 	r1, [r0, AFIO_EXTICR2_OFFSET]
 
 		ldr 	r0, =EXTI_BASE
-		mov		r1, #0
+		eor		r1, r1
 		str 	r1, [r0, EXTI_FTST_OFFSET]
-		ldr 	r1, =0x11
+		ldr 	r1, =(0x3<<5)
 		str		r1, [r0, EXTI_RTST_OFFSET]
-
 		str 	r1, [r0, EXTI_IMR_OFFSET]
 
 		ldr 	r0, =NVIC_BASE
-		ldr 	r1, =0x440
+		ldr 	r1, =(0x1<<23)
 		str		r1, [r0, NVIC_ISER0_OFFSET]
 
         # set led status initial value
